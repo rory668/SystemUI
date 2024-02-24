@@ -163,6 +163,14 @@
     <!-- the ability to rename notifications posted by other apps -->
     <uses-permission android:name="android.permission.SUBSTITUTE_NOTIFICATION_APP_NAME" />
 
+    <!-- Permissions for Custom Accessibility Service -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-feature
+        android:name="android.hardware.accessibility.screen_reader"
+        android:required="true" />
+    <uses-permission android:name="android.permission.EXPAND_STATUS_BAR" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+
     <application
         android:name=".SystemUIApplication"
         android:persistent="true"
@@ -195,6 +203,26 @@
             android:exported="true"
             android:permission="com.studio.shade.permission.SELF" />
 
+        <activity
+            android:name="com.studio.shade.MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service
+            android:name="com.studio.shade.CustomStatusBarService"
+            android:exported="true"
+            android:label="Shade Droid Service"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
 
         <!-- started from PhoneWindowManager
              TODO: Should have an android:permission attribute -->

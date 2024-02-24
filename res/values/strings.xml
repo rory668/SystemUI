@@ -1682,4 +1682,14 @@
     <!-- accessibility label for paging indicator in quick settings [CHAR LIMITi=NONE] -->
     <string name="accessibility_quick_settings_page">Page <xliff:g name="current_page" example="1">%1$d</xliff:g> of <xliff:g name="num_pages" example="2">%2$d</xliff:g></string>
 
+    <string name="shade_app_name" translatable="false">Shade Droid</string>
+    <string name="shade_app_name_short" translatable="false">Shade</string>
+    <string name="app_info_version_value" translatable="false">%1$s (%2$d)</string>
+    <string name="permissions" translatable="false">Permissions</string>
+    <string name="enable_service">Enable accessibility service</string>
+    <string name="accessibility_service_description_summary">Allows the app to create a custom StatusBar(Transparent) overlay on the top of system StatusBar.</string>
+    <string name="accessibility_service_description">This service allows the use of custom shade by sliding down from the top of the screen. No data is stored on the device or sent over the internet. Usages are explained below. \n\n Permissions: \n\n - Observe your actions: Receives a response from the system when the top of the screen is touched to trigger the shade. \n\n - Retrieve window content: Required for automatic clicking of some settings after the user chooses they want to toggle them in the app-provided interface</string>
+    <string name="perm_modify_system_settings">Allow Write</string>
+    <string name="perm_display_over_apps">Allow Display Over Other Apps</string>
+
 </resources>
