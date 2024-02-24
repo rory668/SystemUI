@@ -72,7 +72,6 @@ import com.android.keyguard.ViewMediatorCallback;
 import com.studio.shade.SystemUI;
 import com.studio.shade.SystemUIFactory;
 import com.studio.shade.classifier.FalsingManager;
-import com.studio.shade.statusbar.phone.FingerprintUnlockController;
 import com.studio.shade.statusbar.phone.PhoneStatusBar;
 import com.studio.shade.statusbar.phone.ScrimController;
 import com.studio.shade.statusbar.phone.StatusBarKeyguardViewManager;
@@ -1829,10 +1828,9 @@ public class KeyguardViewMediator extends SystemUI {
 
     public StatusBarKeyguardViewManager registerStatusBar(PhoneStatusBar phoneStatusBar,
             ViewGroup container, StatusBarWindowManager statusBarWindowManager,
-            ScrimController scrimController,
-            FingerprintUnlockController fingerprintUnlockController) {
+            ScrimController scrimController) {
         mStatusBarKeyguardViewManager.registerStatusBar(phoneStatusBar, container,
-                statusBarWindowManager, scrimController, fingerprintUnlockController);
+                statusBarWindowManager, scrimController);
         return mStatusBarKeyguardViewManager;
     }
 

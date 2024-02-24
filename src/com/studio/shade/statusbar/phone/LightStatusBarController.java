@@ -31,8 +31,7 @@ public class LightStatusBarController {
 
     private final StatusBarIconController mIconController;
     private final BatteryController mBatteryController;
-    private FingerprintUnlockController mFingerprintUnlockController;
-
+    
     private int mFullscreenStackVisibility;
     private int mDockedStackVisibility;
     private boolean mFullscreenLight;
@@ -45,11 +44,6 @@ public class LightStatusBarController {
             BatteryController batteryController) {
         mIconController = iconController;
         mBatteryController = batteryController;
-    }
-
-    public void setFingerprintUnlockController(
-            FingerprintUnlockController fingerprintUnlockController) {
-        mFingerprintUnlockController = fingerprintUnlockController;
     }
 
     public void onSystemUiVisibilityChanged(int fullscreenStackVis, int dockedStackVis, int mask,
@@ -86,12 +80,6 @@ public class LightStatusBarController {
     }
 
     private boolean animateChange() {
-        if (mFingerprintUnlockController == null) {
-            return false;
-        }
-        int unlockMode = mFingerprintUnlockController.getMode();
-        return unlockMode != FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING
-                && unlockMode != FingerprintUnlockController.MODE_WAKE_AND_UNLOCK;
     }
 
     private void update(Rect fullscreenStackBounds, Rect dockedStackBounds) {

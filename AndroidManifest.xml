@@ -271,66 +271,6 @@
                   android:process=":screenshot"
                   android:exported="false" />
 
-        <!-- started from UsbDeviceSettingsManager -->
-        <activity android:name=".usb.UsbConfirmActivity"
-            android:exported="true"
-            android:permission="android.permission.MANAGE_USB"
-            android:theme="@style/Theme.SystemUI.Dialog.Alert"
-            android:finishOnCloseSystemDialogs="true"
-            android:excludeFromRecents="true">
-        </activity>
-
-        <!-- started from UsbDeviceSettingsManager -->
-        <activity android:name=".usb.UsbPermissionActivity"
-            android:exported="true"
-            android:permission="android.permission.MANAGE_USB"
-            android:theme="@style/Theme.SystemUI.Dialog.Alert"
-            android:finishOnCloseSystemDialogs="true"
-            android:excludeFromRecents="true">
-        </activity>
-
-        <!-- started from UsbDeviceSettingsManager -->
-        <activity android:name=".usb.UsbResolverActivity"
-            android:exported="true"
-            android:permission="android.permission.MANAGE_USB"
-            android:theme="@style/Theme.SystemUI.Dialog.Alert"
-            android:finishOnCloseSystemDialogs="true"
-            android:excludeFromRecents="true">
-        </activity>
-
-        <!-- started from UsbDeviceSettingsManager -->
-        <activity android:name=".usb.UsbAccessoryUriActivity"
-            android:exported="true"
-            android:permission="android.permission.MANAGE_USB"
-            android:theme="@style/Theme.SystemUI.Dialog.Alert"
-            android:finishOnCloseSystemDialogs="true"
-            android:excludeFromRecents="true">
-        </activity>
-
-        <!-- started from UsbDebuggingManager -->
-        <activity android:name=".usb.UsbDebuggingActivity"
-            android:permission="android.permission.MANAGE_USB"
-            android:theme="@style/Theme.SystemUI.Dialog.Alert"
-            android:finishOnCloseSystemDialogs="true"
-            android:excludeFromRecents="true">
-        </activity>
-        <activity android:name=".usb.UsbDebuggingSecondaryUserActivity"
-            android:theme="@style/Theme.SystemUI.Dialog.Alert"
-            android:finishOnCloseSystemDialogs="true"
-            android:excludeFromRecents="true">
-        </activity>
-
-        <!-- started from NetworkPolicyManagerService -->
-        <activity
-            android:name=".net.NetworkOverLimitActivity"
-            android:exported="true"
-            android:permission="android.permission.MANAGE_NETWORK_POLICY"
-            android:theme="@android:style/Theme.DeviceDefault.Light.Panel"
-            android:finishOnCloseSystemDialogs="true"
-            android:launchMode="singleTop"
-            android:taskAffinity="com.studio.shade.net"
-            android:excludeFromRecents="true" />
-
         <!-- started from MediaProjectionManager -->
         <activity
             android:name=".media.MediaProjectionPermissionActivity"

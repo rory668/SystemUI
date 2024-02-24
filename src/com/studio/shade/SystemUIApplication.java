@@ -46,16 +46,10 @@ public class SystemUIApplication extends Application {
     private final Class<?>[] SERVICES = new Class[] {
             com.studio.shade.tuner.TunerService.class,
             com.studio.shade.keyguard.KeyguardViewMediator.class,
-            com.studio.shade.recents.Recents.class,
             com.studio.shade.volume.VolumeUI.class,
             Divider.class,
             com.studio.shade.statusbar.SystemBars.class,
-            com.studio.shade.usb.StorageNotification.class,
-            com.studio.shade.power.PowerUI.class,
-            com.studio.shade.media.RingtonePlayer.class,
-            com.studio.shade.keyboard.KeyboardUI.class,
-            com.studio.shade.tv.pip.PipUI.class,
-            com.studio.shade.shortcut.ShortcutKeyDispatcher.class
+            com.studio.shade.media.RingtonePlayer.class
     };
 
     /**
@@ -63,8 +57,6 @@ public class SystemUIApplication extends Application {
      * above.
      */
     private final Class<?>[] SERVICES_PER_USER = new Class[] {
-            com.studio.shade.recents.Recents.class,
-            com.studio.shade.tv.pip.PipUI.class
     };
 
     /**

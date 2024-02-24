@@ -18,31 +18,11 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
     <!-- Name of the status bar as seen in the applications info settings page. [CHAR LIMIT=12] -->
-    <string name="app_label">System UI</string>
+    <string name="app_label">Shade</string>
 
     <!-- The text for the button in the notification window-shade that clears
          all of the currently visible notifications. [CHAR LIMIT=10]-->
     <string name="status_bar_clear_all_button">Clear</string>
-
-    <!-- Title shown in recents popup for removing an application from the list -->
-    <string name="status_bar_recent_remove_item_title">Remove from list</string>
-
-    <!-- Title shown in recents popup for inspecting an application's properties -->
-    <string name="status_bar_recent_inspect_item_title">App info</string>
-
-    <!-- Message shown in the middle of the screen after clicking on the recent apps button
-         when there are no recent apps to show. Also used for accessibility. [CHAR LIMIT=45]-->
-    <string name="status_bar_no_recent_apps">Your recent screens appear here</string>
-
-    <!-- Content description for the button to dismiss Recent Apps (only present on large
-         devices) -->
-    <string name="status_bar_accessibility_dismiss_recents">Dismiss recent apps</string>
-
-    <!-- Message that is read when you enter recent apps in TalkBack -->
-    <plurals name="status_bar_accessibility_recent_apps">
-        <item quantity="one">1 screen in Overview</item>
-        <item quantity="other">%d screens in Overview</item>
-    </plurals>
 
     <!-- The label in the bar at the top of the status bar when there are no notifications
          showing.  [CHAR LIMIT=40]-->
@@ -530,7 +510,7 @@
     <string name="accessibility_quick_settings_flashlight_changed_on">Flashlight turned on.</string>
     <!-- Announcement made when the color inversion state changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_color_inversion_changed_off">Color inversion turned off.</string>
-    <!-- Announcement made when the color inversion state changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
+    <!-- Annou0ncement made when the color inversion state changes to on (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_color_inversion_changed_on">Color inversion turned on.</string>
     <!-- Announcement made when the hotspot state changes to off (not shown on the screen). [CHAR LIMIT=NONE] -->
     <string name="accessibility_quick_settings_hotspot_changed_off">Mobile hotspot turned off.</string>

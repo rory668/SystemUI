@@ -309,7 +309,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     protected KeyguardMonitor mKeyguardMonitor;
     BrightnessMirrorController mBrightnessMirrorController;
     AccessibilityController mAccessibilityController;
-    FingerprintUnlockController mFingerprintUnlockController;
     LightStatusBarController mLightStatusBarController;
     protected LockscreenWallpaper mLockscreenWallpaper;
 
@@ -1177,15 +1176,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     protected void startKeyguard() {
         KeyguardViewMediator keyguardViewMediator = getComponent(KeyguardViewMediator.class);
-        mFingerprintUnlockController = new FingerprintUnlockController(mContext,
-                mStatusBarWindowManager, mDozeScrimController, keyguardViewMediator,
-                mScrimController, this);
         mStatusBarKeyguardViewManager = keyguardViewMediator.registerStatusBar(this,
-                getBouncerContainer(), mStatusBarWindowManager, mScrimController,
-                mFingerprintUnlockController);
+                getBouncerContainer(), mStatusBarWindowManager, mScrimController);
         mKeyguardIndicationController.setStatusBarKeyguardViewManager(
                 mStatusBarKeyguardViewManager);
-        mFingerprintUnlockController.setStatusBarKeyguardViewManager(mStatusBarKeyguardViewManager);
         mIconPolicy.setStatusBarKeyguardViewManager(mStatusBarKeyguardViewManager);
         mRemoteInputController.addCallback(mStatusBarKeyguardViewManager);
 
@@ -1209,7 +1203,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         });
 
         mKeyguardViewMediatorCallback = keyguardViewMediator.getViewMediatorCallback();
-        mLightStatusBarController.setFingerprintUnlockController(mFingerprintUnlockController);
     }
 
     @Override
@@ -2107,8 +2100,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         if ((hasArtwork || DEBUG_MEDIA_FAKE_ARTWORK)
                 && (mState != StatusBarState.SHADE || allowWhenShade)
-                && mFingerprintUnlockController.getMode()
-                        != FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING
                 && !hideBecauseOccluded) {
             // time to show some art!
             if (mBackdrop.getVisibility() != View.VISIBLE) {
@@ -2176,9 +2167,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (DEBUG_MEDIA) {
                     Log.v(TAG, "DEBUG_MEDIA: Fading out album artwork");
                 }
-                if (mFingerprintUnlockController.getMode()
-                        == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING
-                        || hideBecauseOccluded) {
+                if (hideBecauseOccluded) {
 
                     // We are unlocking directly - no animation!
                     mBackdrop.setVisibility(View.GONE);
@@ -4147,9 +4136,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         // Immediately abort the dozing from the doze scrim controller in case of wake-and-unlock
         // for pulsing so the Keyguard fade-out animation scrim can take over.
-        mDozeScrimController.setDozing(mDozing &&
-                mFingerprintUnlockController.getMode()
-                        != FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING, animate);
+        mDozeScrimController.setDozing(mDozing, animate);
     }
 
     public void updateStackScrollerState(boolean goingToFullShade, boolean fromShadeLocked) {
@@ -4748,9 +4735,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private void updateDozing() {
         // When in wake-and-unlock while pulsing, keep dozing state until fully unlocked.
-        mDozing = mDozingRequested && mState == StatusBarState.KEYGUARD
-                || mFingerprintUnlockController.getMode()
-                        == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING;
+        mDozing = mDozingRequested && mState == StatusBarState.KEYGUARD;
         updateDozingState();
     }
 
@@ -4855,8 +4840,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         @Override
         public boolean isPulsingBlocked() {
-            return mFingerprintUnlockController.getMode()
-                    == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK;
         }
 
         @Override

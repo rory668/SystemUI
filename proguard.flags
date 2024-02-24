@@ -1,19 +1,19 @@
--keep class com.android.systemui.statusbar.policy.KeyButtonView {
+-keep class com.studio.shade.statusbar.policy.KeyButtonView {
   public float getDrawingAlpha();
   public void setDrawingAlpha(float);
 }
 
--keep class com.android.systemui.statusbar.policy.KeyButtonRipple {
+-keep class com.studio.shade.statusbar.policy.KeyButtonRipple {
   public float getGlowAlpha();
   public float getGlowScale();
   public void setGlowAlpha(float);
   public void setGlowScale(float);
 }
 
--keep class com.android.systemui.statusbar.car.CarStatusBar
--keep class com.android.systemui.statusbar.phone.PhoneStatusBar
--keep class com.android.systemui.statusbar.tv.TvStatusBar
--keep class com.android.systemui.SystemUIFactory
+-keep class com.studio.shade.statusbar.car.CarStatusBar
+-keep class com.studio.shade.statusbar.phone.PhoneStatusBar
+-keep class com.studio.shade.statusbar.tv.TvStatusBar
+-keep class com.studio.shade.SystemUIFactory
 
 -keepclassmembers class ** {
     public void onBusEvent(**);
@@ -23,7 +23,7 @@
     public <init>(android.os.Bundle);
 }
 
--keep class com.android.systemui.recents.views.TaskView {
+-keep class com.studio.shade.recents.views.TaskView {
     public int getDim();
     public void setDim(int);
     public float getTaskProgress();
@@ -35,4 +35,4 @@
 }
 
 -keep class ** extends android.support.v14.preference.PreferenceFragment
--keep class com.android.systemui.tuner.*
+-keep class com.studio.shade.tuner.*

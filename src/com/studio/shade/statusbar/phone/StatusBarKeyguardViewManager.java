@@ -61,8 +61,7 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
     protected ViewMediatorCallback mViewMediatorCallback;
     protected PhoneStatusBar mPhoneStatusBar;
     private ScrimController mScrimController;
-    private FingerprintUnlockController mFingerprintUnlockController;
-
+    
     private ViewGroup mContainer;
     private StatusBarWindowManager mStatusBarWindowManager;
 
@@ -93,13 +92,11 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
 
     public void registerStatusBar(PhoneStatusBar phoneStatusBar,
             ViewGroup container, StatusBarWindowManager statusBarWindowManager,
-            ScrimController scrimController,
-            FingerprintUnlockController fingerprintUnlockController) {
+            ScrimController scrimController) {
         mPhoneStatusBar = phoneStatusBar;
         mContainer = container;
         mStatusBarWindowManager = statusBarWindowManager;
         mScrimController = scrimController;
-        mFingerprintUnlockController = fingerprintUnlockController;
         mBouncer = SystemUIFactory.getInstance().createKeyguardBouncer(mContext,
                 mViewMediatorCallback, mLockPatternUtils, mStatusBarWindowManager, container);
     }
@@ -303,44 +300,6 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
                 }
             });
         } else {
-            if (mFingerprintUnlockController.getMode()
-                    == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING) {
-                mFingerprintUnlockController.startKeyguardFadingAway();
-                mPhoneStatusBar.setKeyguardFadingAway(startTime, 0, 240);
-                mStatusBarWindowManager.setKeyguardFadingAway(true);
-                mPhoneStatusBar.fadeKeyguardWhilePulsing();
-                animateScrimControllerKeyguardFadingOut(0, 240, new Runnable() {
-                    @Override
-                    public void run() {
-                        mPhoneStatusBar.hideKeyguard();
-                    }
-                }, false /* skipFirstFrame */);
-            } else {
-                mFingerprintUnlockController.startKeyguardFadingAway();
-                mPhoneStatusBar.setKeyguardFadingAway(startTime, delay, fadeoutDuration);
-                boolean staying = mPhoneStatusBar.hideKeyguard();
-                if (!staying) {
-                    mStatusBarWindowManager.setKeyguardFadingAway(true);
-                    if (mFingerprintUnlockController.getMode()
-                            == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK) {
-                        if (!mScreenTurnedOn) {
-                            mDeferScrimFadeOut = true;
-                        } else {
-
-                            // Screen is already on, don't defer with fading out.
-                            animateScrimControllerKeyguardFadingOut(0,
-                                    WAKE_AND_UNLOCK_SCRIM_FADEOUT_DURATION_MS,
-                                    true /* skipFirstFrame */);
-                        }
-                    } else {
-                        animateScrimControllerKeyguardFadingOut(delay, fadeoutDuration,
-                                false /* skipFirstFrame */);
-                    }
-                } else {
-                    mScrimController.animateGoingToFullShade(delay, fadeoutDuration);
-                    mPhoneStatusBar.finishKeyguardFadingAway();
-                }
-            }
             mStatusBarWindowManager.setKeyguardShowing(false);
             mBouncer.hide(true /* destroyView */);
             mViewMediatorCallback.keyguardGone();
@@ -370,7 +329,6 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
                 }
                 mStatusBarWindowManager.setKeyguardFadingAway(false);
                 mPhoneStatusBar.finishKeyguardFadingAway();
-                mFingerprintUnlockController.finishKeyguardFadingAway();
                 WindowManagerGlobal.getInstance().trimMemory(
                         ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
                 Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, "Fading out", 0);
