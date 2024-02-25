@@ -102,8 +102,6 @@ import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
-import com.android.keyguard.KeyguardUpdateMonitor;
-import com.android.keyguard.KeyguardUpdateMonitorCallback;
 import com.android.keyguard.ViewMediatorCallback;
 import com.studio.shade.AutoReinflateContainer;
 import com.studio.shade.AutoReinflateContainer.InflateListener;
@@ -120,7 +118,6 @@ import com.studio.shade.classifier.FalsingLog;
 import com.studio.shade.classifier.FalsingManager;
 import com.studio.shade.doze.DozeHost;
 import com.studio.shade.doze.DozeLog;
-import com.studio.shade.keyguard.KeyguardViewMediator;
 import com.studio.shade.qs.QSContainer;
 import com.studio.shade.qs.QSPanel;
 import com.studio.shade.recents.ScreenPinningRequest;
@@ -158,8 +155,6 @@ import com.studio.shade.statusbar.policy.CastControllerImpl;
 import com.studio.shade.statusbar.policy.FlashlightController;
 import com.studio.shade.statusbar.policy.HeadsUpManager;
 import com.studio.shade.statusbar.policy.HotspotControllerImpl;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
-import com.studio.shade.statusbar.policy.KeyguardUserSwitcher;
 import com.studio.shade.statusbar.policy.LocationControllerImpl;
 import com.studio.shade.statusbar.policy.NetworkControllerImpl;
 import com.studio.shade.statusbar.policy.NextAlarmController;
@@ -168,7 +163,6 @@ import com.studio.shade.statusbar.policy.RotationLockControllerImpl;
 import com.studio.shade.statusbar.policy.SecurityControllerImpl;
 import com.studio.shade.statusbar.policy.UserInfoController;
 import com.studio.shade.statusbar.policy.UserSwitcherController;
-import com.studio.shade.statusbar.policy.ZenModeController;
 import com.studio.shade.statusbar.stack.NotificationStackScrollLayout;
 import com.studio.shade.statusbar.stack.NotificationStackScrollLayout.OnChildLocationsChangedListener;
 import com.studio.shade.statusbar.stack.StackStateAnimator;
@@ -302,11 +296,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     protected ZenModeController mZenModeController;
     CastControllerImpl mCastController;
     VolumeComponent mVolumeComponent;
-    KeyguardUserSwitcher mKeyguardUserSwitcher;
     FlashlightController mFlashlightController;
     protected UserSwitcherController mUserSwitcherController;
     NextAlarmController mNextAlarmController;
-    protected KeyguardMonitor mKeyguardMonitor;
     BrightnessMirrorController mBrightnessMirrorController;
     AccessibilityController mAccessibilityController;
     LightStatusBarController mLightStatusBarController;
@@ -322,10 +314,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mStatusBarWindowState = WINDOW_STATE_SHOWING;
     protected StatusBarWindowManager mStatusBarWindowManager;
     private UnlockMethodCache mUnlockMethodCache;
-    private DozeServiceHost mDozeServiceHost;
-    private boolean mWakeUpComingFromTouch;
-    private PointF mWakeUpTouchLocation;
-    private boolean mScreenTurningOn;
 
     int mPixelFormat;
     Object mQueueLock = new Object();
@@ -342,24 +330,10 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     // top bar
     BaseStatusBarHeader mHeader;
-    protected KeyguardStatusBarView mKeyguardStatusBar;
-    View mKeyguardStatusView;
-    KeyguardBottomAreaView mKeyguardBottomArea;
-    boolean mLeaveOpenOnKeyguardHide;
-    KeyguardIndicationController mKeyguardIndicationController;
-
-    // Keyguard is going away soon.
-    private boolean mKeyguardGoingAway;
-    // Keyguard is actually fading away now.
-    private boolean mKeyguardFadingAway;
-    private long mKeyguardFadingAwayDelay;
-    private long mKeyguardFadingAwayDuration;
 
     // RemoteInputView to be activated after unlock
     private View mPendingRemoteInputView;
     private View mPendingWorkRemoteInputView;
-
-    int mMaxAllowedKeyguardNotifications;
 
     boolean mExpandedVisible;
 
@@ -457,7 +431,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     private ViewMediatorCallback mKeyguardViewMediatorCallback;
     protected ScrimController mScrimController;
-    protected DozeScrimController mDozeScrimController;
 
     private final Runnable mAutohide = new Runnable() {
         @Override
@@ -469,8 +442,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }};
 
     private boolean mWaitingForKeyguardExit;
-    private boolean mDozing;
-    private boolean mDozingRequested;
     protected boolean mScrimSrcModeEnabled;
 
     public static final Interpolator ALPHA_IN = Interpolators.ALPHA_IN;
