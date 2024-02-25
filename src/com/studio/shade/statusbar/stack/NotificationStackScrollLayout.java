@@ -772,10 +772,6 @@ public class NotificationStackScrollLayout extends ViewGroup
         performDismiss(v, mGroupManager, false /* fromAccessibility */);
 
         mFalsingManager.onNotificationDismissed();
-        if (mFalsingManager.shouldEnforceBouncer()) {
-            mPhoneStatusBar.executeRunnableDismissingKeyguard(null, null /* cancelAction */,
-                    false /* dismissShade */, true /* afterKeyguardGone */, false /* deferred */);
-        }
     }
 
     public static void performDismiss(View v, NotificationGroupManager groupManager,
