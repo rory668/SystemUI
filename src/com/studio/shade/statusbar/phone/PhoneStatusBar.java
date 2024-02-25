@@ -643,7 +643,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
         mUnlockMethodCache = UnlockMethodCache.getInstance(mContext);
         mUnlockMethodCache.addListener(this);
-        startKeyguard();
 
         putComponent(PhoneStatusBar.class, this);
 
@@ -1254,7 +1253,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 if (mState == StatusBarState.SHADE) {
                     animateCollapsePanels();
                 } else if (mState == StatusBarState.SHADE_LOCKED) {
-                    goToKeyguard();
                 }
             }
         }
