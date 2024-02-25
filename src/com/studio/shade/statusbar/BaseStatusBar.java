@@ -93,7 +93,6 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.KeyguardHostView.OnDismissAction;
-import com.android.keyguard.KeyguardUpdateMonitor;
 import com.studio.shade.DejankUtils;
 import com.studio.shade.Interpolators;
 import com.studio.shade.R;
@@ -212,7 +211,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected PowerManager mPowerManager;
 
     // public mode, private notifications, etc
-    private boolean mLockscreenPublicMode = false;
     private final SparseBooleanArray mUsersAllowingPrivateNotifications = new SparseBooleanArray();
     private final SparseBooleanArray mUsersAllowingNotifications = new SparseBooleanArray();
 
@@ -238,8 +236,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected RecentsComponent mRecents;
 
-    protected int mZenMode;
-
     // which notification is currently being longpress-examined by the user
     private NotificationGuts mNotificationGutsExposed;
 
@@ -247,7 +243,6 @@ public abstract class BaseStatusBar extends SystemUI implements
      * The {@link StatusBarState} of the status bar.
      */
     protected int mState;
-    protected boolean mAllowLockscreenRemoteInput;
 
     protected NotificationOverflowContainer mKeyguardIconOverflowContainer;
     protected DismissView mDismissView;
@@ -284,11 +279,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mDeviceProvisioned = provisioned;
                 updateNotifications();
             }
-            final int mode = Settings.Global.getInt(mContext.getContentResolver(),
-                    Settings.Global.ZEN_MODE, Settings.Global.ZEN_MODE_OFF);
-            setZenMode(mode);
-
-            updateLockscreenNotificationSetting();
         }
     };
 
@@ -326,9 +316,6 @@ public abstract class BaseStatusBar extends SystemUI implements
             }
             final boolean isActivity = pendingIntent.isActivity();
             if (isActivity) {
-                final boolean keyguardShowing = mStatusBarKeyguardViewManager.isShowing();
-                final boolean afterKeyguardGone = PreviewInflater.wouldLaunchResolverActivity(
-                        mContext, pendingIntent.getIntent(), mCurrentUserId);
                 return true;
             } else {
                 return superOnClickHandler(view, pendingIntent, fillInIntent);
@@ -421,19 +408,6 @@ public abstract class BaseStatusBar extends SystemUI implements
             }
 
             row.setUserExpanded(true);
-
-            if (!mAllowLockscreenRemoteInput) {
-                if (isLockscreenPublicMode()) {
-                    onLockedRemoteInput(row, view);
-                    return true;
-                }
-                final int userId = pendingIntent.getCreatorUserHandle().getIdentifier();
-                if (mUserManager.getUserInfo(userId).isManagedProfile()
-                        && mKeyguardManager.isDeviceLocked(userId)) {
-                    onLockedWorkRemoteInput(userId, row, view);
-                    return true;
-                }
-            }
 
             riv.setVisibility(View.VISIBLE);
             int cx = view.getLeft() + view.getWidth() / 2;
@@ -659,26 +633,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         mContext.getContentResolver().registerContentObserver(
                 Settings.Global.getUriFor(Settings.Global.DEVICE_PROVISIONED), true,
                 mSettingsObserver);
-        mContext.getContentResolver().registerContentObserver(
-                Settings.Global.getUriFor(Settings.Global.ZEN_MODE), false,
-                mSettingsObserver);
-        mContext.getContentResolver().registerContentObserver(
-                Settings.Secure.getUriFor(Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS), false,
-                mSettingsObserver,
-                UserHandle.USER_ALL);
-        if (ENABLE_LOCK_SCREEN_ALLOW_REMOTE_INPUT) {
-            mContext.getContentResolver().registerContentObserver(
-                    Settings.Secure.getUriFor(Settings.Secure.LOCK_SCREEN_ALLOW_REMOTE_INPUT),
-                    false,
-                    mSettingsObserver,
-                    UserHandle.USER_ALL);
-        }
-
-        mContext.getContentResolver().registerContentObserver(
-                Settings.Secure.getUriFor(Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS),
-                true,
-                mLockscreenSettingsObserver,
-                UserHandle.USER_ALL);
 
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
@@ -692,8 +646,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         mDensity = currentConfig.densityDpi;
 
         mUserManager = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
-        mKeyguardManager = (KeyguardManager) mContext.getSystemService(Context.KEYGUARD_SERVICE);
-        mLockPatternUtils = new LockPatternUtils(mContext);
 
         // Connect in to the status bar manager service
         mCommandQueue = new CommandQueue(this);
@@ -784,19 +736,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         if (0 != Settings.Secure.getInt(mContext.getContentResolver(),
                 Settings.Secure.SHOW_NOTE_ABOUT_NOTIFICATION_HIDING, 1)) {
             Log.d(TAG, "user hasn't seen notification about hidden notifications");
-            if (!mLockPatternUtils.isSecure(KeyguardUpdateMonitor.getCurrentUser())) {
-                Log.d(TAG, "insecure lockscreen, skipping notification");
-                Settings.Secure.putInt(mContext.getContentResolver(),
-                        Settings.Secure.SHOW_NOTE_ABOUT_NOTIFICATION_HIDING, 0);
-                return;
-            }
-            Log.d(TAG, "disabling lockecreen notifications and alerting the user");
-            // disable lockscreen notifications until user acts on the banner.
-            Settings.Secure.putInt(mContext.getContentResolver(),
-                    Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS, 0);
-            Settings.Secure.putInt(mContext.getContentResolver(),
-                    Settings.Secure.LOCK_SCREEN_ALLOW_PRIVATE_NOTIFICATIONS, 0);
-
             final String packageName = mContext.getPackageName();
             PendingIntent cancelIntent = PendingIntent.getBroadcast(mContext, 0,
                     new Intent(BANNER_ACTION_CANCEL).setPackage(packageName),
@@ -1037,7 +976,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             @Override
             public void onClick(View v) {
                 // If the user has security enabled, show challenge if the setting is changed.
-                if (guts.hasImportanceChanged() && isLockscreenPublicMode() &&
+                if (guts.hasImportanceChanged() &&
                         (mState == StatusBarState.KEYGUARD
                         || mState == StatusBarState.SHADE_LOCKED)) {
                     OnDismissAction dismissAction = new OnDismissAction() {
