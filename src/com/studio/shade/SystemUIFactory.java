@@ -30,7 +30,6 @@ import com.studio.shade.statusbar.phone.PhoneStatusBar;
 import com.studio.shade.statusbar.phone.QSTileHost;
 import com.studio.shade.statusbar.phone.ScrimController;
 import com.studio.shade.statusbar.phone.StatusBarIconController;
-import com.studio.shade.statusbar.phone.StatusBarKeyguardViewManager;
 import com.studio.shade.statusbar.phone.StatusBarWindowManager;
 import com.studio.shade.statusbar.policy.BatteryController;
 import com.studio.shade.statusbar.policy.BluetoothController;
@@ -76,11 +75,6 @@ public class SystemUIFactory {
     }
 
     public SystemUIFactory() {}
-
-    public StatusBarKeyguardViewManager createStatusBarKeyguardViewManager(Context context,
-            ViewMediatorCallback viewMediatorCallback, LockPatternUtils lockPatternUtils) {
-        return new StatusBarKeyguardViewManager(context, viewMediatorCallback, lockPatternUtils);
-    }
 
     public KeyguardBouncer createKeyguardBouncer(Context context, ViewMediatorCallback callback,
             LockPatternUtils lockPatternUtils, StatusBarWindowManager windowManager,
