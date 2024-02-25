@@ -105,7 +105,6 @@ import com.studio.shade.statusbar.NotificationData.Entry;
 import com.studio.shade.statusbar.NotificationGuts.OnGutsClosedListener;
 import com.studio.shade.statusbar.phone.NavigationBarView;
 import com.studio.shade.statusbar.phone.NotificationGroupManager;
-import com.studio.shade.statusbar.phone.StatusBarKeyguardViewManager;
 import com.studio.shade.statusbar.policy.HeadsUpManager;
 import com.studio.shade.statusbar.policy.PreviewInflater;
 import com.studio.shade.statusbar.policy.RemoteInputView;
@@ -1642,11 +1641,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected boolean startWorkChallengeIfNecessary(int userId, IntentSender intendSender,
             String notificationKey) {
-        final Intent newIntent = mKeyguardManager.createConfirmDeviceCredentialIntent(null,
-                null, userId);
-        if (newIntent == null) {
-            return false;
-        }
         final Intent callBackIntent = new Intent(
                 WORK_CHALLENGE_UNLOCKED_NOTIFICATION_ACTION);
         callBackIntent.putExtra(Intent.EXTRA_INTENT, intendSender);
