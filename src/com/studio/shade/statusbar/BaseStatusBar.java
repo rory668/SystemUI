@@ -92,7 +92,6 @@ import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.android.internal.widget.LockPatternUtils;
-import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.studio.shade.DejankUtils;
 import com.studio.shade.Interpolators;
 import com.studio.shade.R;
@@ -978,14 +977,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 if (guts.hasImportanceChanged() &&
                         (mState == StatusBarState.KEYGUARD
                         || mState == StatusBarState.SHADE_LOCKED)) {
-                    OnDismissAction dismissAction = new OnDismissAction() {
-                        @Override
-                        public boolean onDismiss() {
-                            saveImportanceCloseControls(sbn, row, guts, v);
-                            return true;
-                        }
-                    };
-                    onLockedNotificationImportanceChange(dismissAction);
                 } else {
                     saveImportanceCloseControls(sbn, row, guts, v);
                 }
@@ -1308,8 +1299,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mStackScroller.getChildCount();
         }
     }
-
-    protected void onLockedNotificationImportanceChange(OnDismissAction dismissAction) {}
 
     protected void onLockedRemoteInput(ExpandableNotificationRow row, View clickedView) {}
 
