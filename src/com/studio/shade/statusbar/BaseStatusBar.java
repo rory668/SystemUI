@@ -198,8 +198,6 @@ public abstract class BaseStatusBar extends SystemUI implements
      * what you replied and allows you to continue typing into it.
      */
     protected ArraySet<String> mKeysKeptForRemoteInput = new ArraySet<>();
-
-    // mScreenOnFromKeyguard && mVisible.
     private boolean mVisibleToUser;
 
     private Locale mLocale;
@@ -212,7 +210,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected DevicePolicyManager mDevicePolicyManager;
     protected IDreamManager mDreamManager;
     protected PowerManager mPowerManager;
-    protected StatusBarKeyguardViewManager mStatusBarKeyguardViewManager;
 
     // public mode, private notifications, etc
     private boolean mLockscreenPublicMode = false;
@@ -221,9 +218,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private UserManager mUserManager;
     private int mDensity;
-
-    private KeyguardManager mKeyguardManager;
-    private LockPatternUtils mLockPatternUtils;
 
     // UI-specific methods
 
@@ -249,14 +243,10 @@ public abstract class BaseStatusBar extends SystemUI implements
     // which notification is currently being longpress-examined by the user
     private NotificationGuts mNotificationGutsExposed;
 
-    private KeyboardShortcuts mKeyboardShortcuts;
-
     /**
      * The {@link StatusBarState} of the status bar.
      */
     protected int mState;
-    protected boolean mBouncerShowing;
-    protected boolean mShowLockscreenNotifications;
     protected boolean mAllowLockscreenRemoteInput;
 
     protected NotificationOverflowContainer mKeyguardIconOverflowContainer;
@@ -339,33 +329,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 final boolean keyguardShowing = mStatusBarKeyguardViewManager.isShowing();
                 final boolean afterKeyguardGone = PreviewInflater.wouldLaunchResolverActivity(
                         mContext, pendingIntent.getIntent(), mCurrentUserId);
-                dismissKeyguardThenExecute(new OnDismissAction() {
-                    @Override
-                    public boolean onDismiss() {
-                        if (keyguardShowing && !afterKeyguardGone) {
-                            try {
-                                ActivityManagerNative.getDefault()
-                                        .keyguardWaitingForActivityDrawn();
-                                ActivityManagerNative.getDefault().resumeAppSwitches();
-                            } catch (RemoteException e) {
-                            }
-                        }
-
-                        boolean handled = superOnClickHandler(view, pendingIntent, fillInIntent);
-                        overrideActivityPendingAppTransition(keyguardShowing && !afterKeyguardGone);
-
-                        // close the shade if it was open
-                        if (handled) {
-                            animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL,
-                                    true /* force */);
-                            visibilityChanged(false);
-                            mAssistManager.hideAssist();
-                        }
-
-                        // Wait for activity start.
-                        return handled;
-                    }
-                }, afterKeyguardGone);
                 return true;
             } else {
                 return superOnClickHandler(view, pendingIntent, fillInIntent);
@@ -500,8 +463,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                 mCurrentUserId = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, -1);
                 updateCurrentProfilesCache();
                 if (true) Log.v(TAG, "userId " + mCurrentUserId + " is in the house");
-
-                updateLockscreenNotificationSetting();
 
                 userSwitched(mCurrentUserId);
             } else if (Intent.ACTION_USER_ADDED.equals(action)) {
@@ -912,15 +873,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         return mGroupManager;
     }
 
-    /**
-     * Takes the necessary steps to prepare the status bar for starting an activity, then starts it.
-     * @param action A dismiss action that is called if it's safe to start the activity.
-     * @param afterKeyguardGone Whether the action should be executed after the Keyguard is gone.
-     */
-    protected void dismissKeyguardThenExecute(OnDismissAction action, boolean afterKeyguardGone) {
-        action.onDismiss();
-    }
-
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         final Locale locale = mContext.getResources().getConfiguration().locale;
@@ -1032,30 +984,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     private void startNotificationGutsIntent(final Intent intent, final int appUid) {
-        final boolean keyguardShowing = mStatusBarKeyguardViewManager.isShowing();
-        dismissKeyguardThenExecute(new OnDismissAction() {
-            @Override
-            public boolean onDismiss() {
-                AsyncTask.execute(new Runnable() {
-                    public void run() {
-                        try {
-                            if (keyguardShowing) {
-                                ActivityManagerNative.getDefault()
-                                        .keyguardWaitingForActivityDrawn();
-                            }
-                            TaskStackBuilder.create(mContext)
-                                    .addNextIntentWithParentStack(intent)
-                                    .startActivities(getActivityOptions(),
-                                            new UserHandle(UserHandle.getUserId(appUid)));
-                            overrideActivityPendingAppTransition(keyguardShowing);
-                        } catch (RemoteException e) {
-                        }
-                    }
-                });
-                animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL, true /* force */);
-                return true;
-            }
-        }, false /* afterKeyguardGone */);
     }
 
     private void bindGuts(final ExpandableNotificationRow row) {
@@ -1257,12 +1185,10 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     @Override
     public void toggleRecentApps() {
-        toggleRecents();
     }
 
     @Override
     public void toggleSplitScreen() {
-        toggleSplitScreenMode(-1 /* metricsDockAction */, -1 /* metricsUndockAction */);
     }
 
     @Override
@@ -1329,12 +1255,9 @@ public abstract class BaseStatusBar extends SystemUI implements
         public boolean onTouch(View v, MotionEvent event) {
             int action = event.getAction() & MotionEvent.ACTION_MASK;
             if (action == MotionEvent.ACTION_DOWN) {
-                preloadRecents();
             } else if (action == MotionEvent.ACTION_CANCEL) {
-                cancelPreloadingRecents();
             } else if (action == MotionEvent.ACTION_UP) {
                 if (!v.isPressed()) {
-                    cancelPreloadingRecents();
                 }
 
             }
@@ -1342,84 +1265,19 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     };
 
-    /**
-     * Toggle docking the app window
-     *
-     * @param metricsDockAction the action to log when docking is successful, or -1 to not log
-     *                          anything on successful docking
-     * @param metricsUndockAction the action to log when undocking, or -1 to not log anything when
-     *                            undocking
-     */
-    protected abstract void toggleSplitScreenMode(int metricsDockAction, int metricsUndockAction);
-
-    /** Proxy for RecentsComponent */
-
-    protected void showRecents(boolean triggeredFromAltTab, boolean fromHome) {
-        if (mRecents != null) {
-            sendCloseSystemWindows(SYSTEM_DIALOG_REASON_RECENT_APPS);
-            mRecents.showRecents(triggeredFromAltTab, fromHome);
-        }
-    }
-
-    protected void hideRecents(boolean triggeredFromAltTab, boolean triggeredFromHomeKey) {
-        if (mRecents != null) {
-            mRecents.hideRecents(triggeredFromAltTab, triggeredFromHomeKey);
-        }
-    }
-
-    protected void toggleRecents() {
-        if (mRecents != null) {
-            mRecents.toggleRecents(mDisplay);
-        }
-    }
-
-    protected void preloadRecents() {
-        if (mRecents != null) {
-            mRecents.preloadRecents();
-        }
-    }
-
     protected void toggleKeyboardShortcuts(int deviceId) {
-        KeyboardShortcuts.toggle(mContext, deviceId);
     }
 
     protected void dismissKeyboardShortcuts() {
-        KeyboardShortcuts.dismiss();
     }
 
     protected void cancelPreloadingRecents() {
-        if (mRecents != null) {
-            mRecents.cancelPreloadingRecents();
-        }
-    }
-
-    protected void showRecentsNextAffiliatedTask() {
-        if (mRecents != null) {
-            mRecents.showNextAffiliatedTask();
-        }
-    }
-
-    protected void showRecentsPreviousAffiliatedTask() {
-        if (mRecents != null) {
-            mRecents.showPrevAffiliatedTask();
-        }
     }
 
     /**
      * If there is an active heads-up notification and it has a fullscreen intent, fire it now.
      */
     public abstract void maybeEscalateHeadsUp();
-
-    /**
-     * Save the current "public" (locked and secure) state of the lockscreen.
-     */
-    public void setLockscreenPublicMode(boolean publicMode) {
-        mLockscreenPublicMode = publicMode;
-    }
-
-    public boolean isLockscreenPublicMode() {
-        return mLockscreenPublicMode;
-    }
 
     protected void onWorkChallengeUnlocked() {}
 
@@ -1480,7 +1338,7 @@ public abstract class BaseStatusBar extends SystemUI implements
      */
     @Override  // NotificationData.Environment
     public boolean shouldHideNotifications(int userid) {
-        return isLockscreenPublicMode() && !userAllowsNotificationsInPublic(userid);
+        return !userAllowsNotificationsInPublic(userid);
     }
 
     /**
@@ -1489,16 +1347,7 @@ public abstract class BaseStatusBar extends SystemUI implements
      */
     @Override // NotificationDate.Environment
     public boolean shouldHideNotifications(String key) {
-        return isLockscreenPublicMode()
-                && mNotificationData.getVisibilityOverride(key) == Notification.VISIBILITY_SECRET;
-    }
-
-    /**
-     * Returns true if we're on a secure lockscreen.
-     */
-    @Override  // NotificationData.Environment
-    public boolean onSecureLockScreen() {
-        return isLockscreenPublicMode();
+        return mNotificationData.getVisibilityOverride(key) == Notification.VISIBILITY_SECRET;
     }
 
     public void onNotificationClear(StatusBarNotification notification) {
@@ -1518,13 +1367,7 @@ public abstract class BaseStatusBar extends SystemUI implements
      */
     public void onPanelLaidOut() {
         if (mState == StatusBarState.KEYGUARD) {
-            // Since the number of notifications is determined based on the height of the view, we
-            // need to update them.
-            int maxBefore = getMaxKeyguardNotifications(false /* recompute */);
-            int maxNotifications = getMaxKeyguardNotifications(true /* recompute */);
-            if (maxBefore != maxNotifications) {
-                updateRowStates();
-            }
+                mStackScroller.getChildCount();
         }
     }
 
@@ -1542,21 +1385,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected class H extends Handler {
         public void handleMessage(Message m) {
             switch (m.what) {
-             case MSG_SHOW_RECENT_APPS:
-                 showRecents(m.arg1 > 0, m.arg2 != 0);
-                 break;
-             case MSG_HIDE_RECENT_APPS:
-                 hideRecents(m.arg1 > 0, m.arg2 > 0);
-                 break;
-             case MSG_TOGGLE_RECENTS_APPS:
-                 toggleRecents();
-                 break;
-             case MSG_PRELOAD_RECENT_APPS:
-                  preloadRecents();
-                  break;
-             case MSG_CANCEL_PRELOAD_RECENT_APPS:
-                  cancelPreloadingRecents();
-                  break;
              case MSG_SHOW_NEXT_AFFILIATED_TASK:
                   showRecentsNextAffiliatedTask();
                   break;
@@ -1565,9 +1393,6 @@ public abstract class BaseStatusBar extends SystemUI implements
                   break;
              case MSG_TOGGLE_KEYBOARD_SHORTCUTS_MENU:
                   toggleKeyboardShortcuts(m.arg1);
-                  break;
-             case MSG_DISMISS_KEYBOARD_SHORTCUTS_MENU:
-                  dismissKeyboardShortcuts();
                   break;
             }
         }
@@ -1743,7 +1568,6 @@ public abstract class BaseStatusBar extends SystemUI implements
             //       userExpanded=true if !isExpandable().
             row.setUserExpanded(userExpanded);
         }
-        row.setUserLocked(userLocked);
         row.onNotificationUpdated(entry);
         return true;
     }
@@ -1793,58 +1617,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
     }
 
-    public void startPendingIntentDismissingKeyguard(final PendingIntent intent) {
-        if (!isDeviceProvisioned()) return;
-
-        final boolean keyguardShowing = mStatusBarKeyguardViewManager.isShowing();
-        final boolean afterKeyguardGone = intent.isActivity()
-                && PreviewInflater.wouldLaunchResolverActivity(mContext, intent.getIntent(),
-                mCurrentUserId);
-        dismissKeyguardThenExecute(new OnDismissAction() {
-            public boolean onDismiss() {
-                new Thread() {
-                    @Override
-                    public void run() {
-                        try {
-                            if (keyguardShowing && !afterKeyguardGone) {
-                                ActivityManagerNative.getDefault()
-                                        .keyguardWaitingForActivityDrawn();
-                            }
-
-                            // The intent we are sending is for the application, which
-                            // won't have permission to immediately start an activity after
-                            // the user switches to home.  We know it is safe to do at this
-                            // point, so make sure new activity switches are now allowed.
-                            ActivityManagerNative.getDefault().resumeAppSwitches();
-                        } catch (RemoteException e) {
-                        }
-                        try {
-                            intent.send(null, 0, null, null, null, null, getActivityOptions());
-                        } catch (PendingIntent.CanceledException e) {
-                            // the stack trace isn't very helpful here.
-                            // Just log the exception message.
-                            Log.w(TAG, "Sending intent failed: " + e);
-
-                            // TODO: Dismiss Keyguard.
-                        }
-                        if (intent.isActivity()) {
-                            mAssistManager.hideAssist();
-                            overrideActivityPendingAppTransition(keyguardShowing
-                                    && !afterKeyguardGone);
-                        }
-                    }
-                }.start();
-
-                // close the shade if it was open
-                animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL,
-                        true /* force */, true /* delayed */);
-                visibilityChanged(false);
-
-                return true;
-            }
-        }, afterKeyguardGone);
-    }
-
     public void addPostCollapseAction(Runnable r) {
     }
 
@@ -1887,120 +1659,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                 }
             });
 
-            final boolean keyguardShowing = mStatusBarKeyguardViewManager.isShowing();
             final boolean afterKeyguardGone = intent.isActivity()
                     && PreviewInflater.wouldLaunchResolverActivity(mContext, intent.getIntent(),
                             mCurrentUserId);
-            dismissKeyguardThenExecute(new OnDismissAction() {
-                public boolean onDismiss() {
-                    if (mHeadsUpManager != null && mHeadsUpManager.isHeadsUp(notificationKey)) {
-                        // Release the HUN notification to the shade.
-
-                        if (isPanelFullyCollapsed()) {
-                            HeadsUpManager.setIsClickedNotification(row, true);
-                        }
-                        //
-                        // In most cases, when FLAG_AUTO_CANCEL is set, the notification will
-                        // become canceled shortly by NoMan, but we can't assume that.
-                        mHeadsUpManager.releaseImmediately(notificationKey);
-                    }
-                    StatusBarNotification parentToCancel = null;
-                    if (shouldAutoCancel(sbn) && mGroupManager.isOnlyChildInGroup(sbn)) {
-                        StatusBarNotification summarySbn = mGroupManager.getLogicalGroupSummary(sbn)
-                                        .getStatusBarNotification();
-                        if (shouldAutoCancel(summarySbn)) {
-                            parentToCancel = summarySbn;
-                        }
-                    }
-                    final StatusBarNotification parentToCancelFinal = parentToCancel;
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            try {
-                                if (keyguardShowing && !afterKeyguardGone) {
-                                    ActivityManagerNative.getDefault()
-                                            .keyguardWaitingForActivityDrawn();
-                                }
-
-                                // The intent we are sending is for the application, which
-                                // won't have permission to immediately start an activity after
-                                // the user switches to home.  We know it is safe to do at this
-                                // point, so make sure new activity switches are now allowed.
-                                ActivityManagerNative.getDefault().resumeAppSwitches();
-                            } catch (RemoteException e) {
-                            }
-                            if (intent != null) {
-                                // If we are launching a work activity and require to launch
-                                // separate work challenge, we defer the activity action and cancel
-                                // notification until work challenge is unlocked.
-                                if (intent.isActivity()) {
-                                    final int userId = intent.getCreatorUserHandle()
-                                            .getIdentifier();
-                                    if (mLockPatternUtils.isSeparateProfileChallengeEnabled(userId)
-                                            && mKeyguardManager.isDeviceLocked(userId)) {
-                                        if (startWorkChallengeIfNecessary(userId,
-                                                intent.getIntentSender(), notificationKey)) {
-                                            // Show work challenge, do not run pendingintent and
-                                            // remove notification
-                                            return;
-                                        }
-                                    }
-                                }
-                                try {
-                                    intent.send(null, 0, null, null, null, null,
-                                            getActivityOptions());
-                                } catch (PendingIntent.CanceledException e) {
-                                    // the stack trace isn't very helpful here.
-                                    // Just log the exception message.
-                                    Log.w(TAG, "Sending contentIntent failed: " + e);
-
-                                    // TODO: Dismiss Keyguard.
-                                }
-                                if (intent.isActivity()) {
-                                    mAssistManager.hideAssist();
-                                    overrideActivityPendingAppTransition(keyguardShowing
-                                            && !afterKeyguardGone);
-                                }
-                            }
-
-                            try {
-                                mBarService.onNotificationClick(notificationKey);
-                            } catch (RemoteException ex) {
-                                // system process is dead if we're here.
-                            }
-                            if (parentToCancelFinal != null) {
-                                // We have to post it to the UI thread for synchronization
-                                mHandler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Runnable removeRunnable = new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                performRemoveNotification(parentToCancelFinal,
-                                                        true);
-                                            }
-                                        };
-                                        if (isCollapsing()) {
-                                            // To avoid lags we're only performing the remove
-                                            // after the shade was collapsed
-                                            addPostCollapseAction(removeRunnable);
-                                        } else {
-                                            removeRunnable.run();
-                                        }
-                                    }
-                                });
-                            }
-                        }
-                    }.start();
-
-                    // close the shade if it was open
-                    animateCollapsePanels(CommandQueue.FLAG_EXCLUDE_RECENTS_PANEL,
-                            true /* force */, true /* delayed */);
-                    visibilityChanged(false);
-
-                    return true;
-                }
-            }, afterKeyguardGone);
         }
 
         private boolean shouldAutoCancel(StatusBarNotification sbn) {
@@ -2218,114 +1879,45 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     /**
-     * @param recompute wheter the number should be recomputed
-     * @return The number of notifications we show on Keyguard.
-     */
-    protected abstract int getMaxKeyguardNotifications(boolean recompute);
-
-    /**
      * Updates expanded, dimmed and locked states of notification rows.
      */
     protected void updateRowStates() {
-        mKeyguardIconOverflowContainer.getIconsView().removeAllViews();
-
         ArrayList<Entry> activeNotifications = mNotificationData.getActiveNotifications();
         final int N = activeNotifications.size();
 
         int visibleNotifications = 0;
-        boolean onKeyguard = mState == StatusBarState.KEYGUARD;
         int maxNotifications = 0;
-        if (onKeyguard) {
-            maxNotifications = getMaxKeyguardNotifications(true /* recompute */);
-        }
         for (int i = 0; i < N; i++) {
             NotificationData.Entry entry = activeNotifications.get(i);
             boolean childNotification = mGroupManager.isChildInGroupWithSummary(entry.notification);
-            if (onKeyguard) {
-                entry.row.setOnKeyguard(true);
-            } else {
-                entry.row.setOnKeyguard(false);
-                entry.row.setSystemExpanded(visibleNotifications == 0 && !childNotification);
-            }
+            entry.row.setSystemExpanded(visibleNotifications == 0 && !childNotification);
             boolean suppressedSummary = mGroupManager.isSummaryOfSuppressedGroup(
                     entry.notification) && !entry.row.isRemoved();
             boolean childWithVisibleSummary = childNotification
                     && mGroupManager.getGroupSummary(entry.notification).getVisibility()
                     == View.VISIBLE;
-            boolean showOnKeyguard = shouldShowOnKeyguard(entry.notification);
-            if (suppressedSummary || (isLockscreenPublicMode() && !mShowLockscreenNotifications) ||
-                    (onKeyguard && !childWithVisibleSummary
-                            && (visibleNotifications >= maxNotifications || !showOnKeyguard))) {
+            if (suppressedSummary && !childWithVisibleSummary
+                            && (visibleNotifications >= maxNotifications)) {
                 entry.row.setVisibility(View.GONE);
-                if (onKeyguard && showOnKeyguard && !childNotification && !suppressedSummary) {
-                    mKeyguardIconOverflowContainer.getIconsView().addNotification(entry);
-                }
             } else {
                 boolean wasGone = entry.row.getVisibility() == View.GONE;
                 entry.row.setVisibility(View.VISIBLE);
                 if (!childNotification && !entry.row.isRemoved()) {
                     if (wasGone) {
                         // notify the scroller of a child addition
-                        mStackScroller.generateAddAnimation(entry.row,
-                                !showOnKeyguard /* fromMoreCard */);
+                        mStackScroller.generateAddAnimation(entry.row /* fromMoreCard */);
                     }
                     visibleNotifications++;
                 }
             }
         }
 
-        mStackScroller.updateOverflowContainerVisibility(onKeyguard
-                && mKeyguardIconOverflowContainer.getIconsView().getChildCount() > 0);
+        mStackScroller.updateOverflowContainerVisibility(mStackScroller.getChildCount() > 0);
 
         mStackScroller.changeViewPosition(mDismissView, mStackScroller.getChildCount() - 1);
         mStackScroller.changeViewPosition(mEmptyShadeView, mStackScroller.getChildCount() - 2);
         mStackScroller.changeViewPosition(mKeyguardIconOverflowContainer,
                 mStackScroller.getChildCount() - 3);
-    }
-
-    public boolean shouldShowOnKeyguard(StatusBarNotification sbn) {
-        return mShowLockscreenNotifications && !mNotificationData.isAmbient(sbn.getKey());
-    }
-
-    protected void setZenMode(int mode) {
-        if (!isDeviceProvisioned()) return;
-        mZenMode = mode;
-        updateNotifications();
-    }
-
-    // extended in PhoneStatusBar
-    protected void setShowLockscreenNotifications(boolean show) {
-        mShowLockscreenNotifications = show;
-    }
-
-    protected void setLockScreenAllowRemoteInput(boolean allowLockscreenRemoteInput) {
-        mAllowLockscreenRemoteInput = allowLockscreenRemoteInput;
-    }
-
-    private void updateLockscreenNotificationSetting() {
-        final boolean show = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                Settings.Secure.LOCK_SCREEN_SHOW_NOTIFICATIONS,
-                1,
-                mCurrentUserId) != 0;
-        final int dpmFlags = mDevicePolicyManager.getKeyguardDisabledFeatures(
-                null /* admin */, mCurrentUserId);
-        final boolean allowedByDpm = (dpmFlags
-                & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_NOTIFICATIONS) == 0;
-
-        setShowLockscreenNotifications(show && allowedByDpm);
-
-        if (ENABLE_LOCK_SCREEN_ALLOW_REMOTE_INPUT) {
-            final boolean remoteInput = Settings.Secure.getIntForUser(mContext.getContentResolver(),
-                    Settings.Secure.LOCK_SCREEN_ALLOW_REMOTE_INPUT,
-                    0,
-                    mCurrentUserId) != 0;
-            final boolean remoteInputDpm =
-                    (dpmFlags & DevicePolicyManager.KEYGUARD_DISABLE_REMOTE_INPUT) == 0;
-
-            setLockScreenAllowRemoteInput(remoteInput && remoteInputDpm);
-        } else {
-            setLockScreenAllowRemoteInput(false);
-        }
     }
 
     protected abstract void setAreThereNotifications();
@@ -2504,10 +2096,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             return false;
         }
 
-        boolean inUse = mPowerManager.isScreenOn()
-                && (!mStatusBarKeyguardViewManager.isShowing()
-                || mStatusBarKeyguardViewManager.isOccluded())
-                && !mStatusBarKeyguardViewManager.isInputRestricted();
+        boolean inUse = mPowerManager.isScreenOn();
         try {
             inUse = inUse && !mDreamManager.isDreaming();
         } catch (RemoteException e) {
@@ -2559,17 +2148,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         // hook for subclasses
     }
 
-    public void setBouncerShowing(boolean bouncerShowing) {
-        mBouncerShowing = bouncerShowing;
-    }
-
-    /**
-     * @return Whether the security bouncer from Keyguard is showing.
-     */
-    public boolean isBouncerShowing() {
-        return mBouncerShowing;
-    }
-
     public void destroy() {
         mContext.unregisterReceiver(mBroadcastReceiver);
         try {
@@ -2608,18 +2186,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         } catch (RemoteException e) {
             // Ignore.
         }
-    }
-
-    public boolean isKeyguardSecure() {
-        if (mStatusBarKeyguardViewManager == null) {
-            // startKeyguard() hasn't been called yet, so we don't know.
-            // Make sure anything that needs to know isKeyguardSecure() checks and re-checks this
-            // value onVisibilityChanged().
-            Slog.w(TAG, "isKeyguardSecure() called before startKeyguard(), returning false",
-                    new Throwable());
-            return false;
-        }
-        return mStatusBarKeyguardViewManager.isSecure();
     }
 
     @Override
