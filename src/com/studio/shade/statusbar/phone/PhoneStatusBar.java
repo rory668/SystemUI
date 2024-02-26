@@ -117,7 +117,6 @@ import com.studio.shade.classifier.FalsingLog;
 import com.studio.shade.classifier.FalsingManager;
 import com.studio.shade.qs.QSContainer;
 import com.studio.shade.qs.QSPanel;
-import com.studio.shade.recents.events.EventBus;
 import com.studio.shade.recents.events.activity.AppTransitionFinishedEvent;
 import com.studio.shade.recents.events.activity.UndockingTaskEvent;
 import com.studio.shade.stackdivider.Divider;
@@ -3567,7 +3566,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     @Override
     public void appTransitionCancelled() {
         mIconController.appTransitionCancelled();
-        EventBus.getDefault().send(new AppTransitionFinishedEvent());
     }
 
     @Override
@@ -3579,7 +3577,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     public void appTransitionFinished() {
-        EventBus.getDefault().send(new AppTransitionFinishedEvent());
     }
 
     private final class ShadeUpdates {
