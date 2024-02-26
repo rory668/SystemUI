@@ -120,7 +120,7 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener,
 
     public void onTrackingStarted() {
         mExpanding = true;
-        mDarkenWhileDragging = !mUnlockMethodCache.canSkipBouncer();
+        //mDarkenWhileDragging = true;
     }
 
     public void onExpandingFinished() {
