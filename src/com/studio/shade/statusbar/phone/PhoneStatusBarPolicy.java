@@ -80,8 +80,7 @@ public class PhoneStatusBarPolicy implements Callback, RotationLockController.Ro
     private final StatusBarIconController mIconController;
     private final RotationLockController mRotationLockController;
     private final DataSaverController mDataSaver;
-    private StatusBarKeyguardViewManager mStatusBarKeyguardViewManager;
-
+    
     // Assume it's all good unless we hear otherwise.  We don't always seem
     // to get broadcasts that it *is* there.
     IccCardConstants.State mSimState = IccCardConstants.State.READY;
@@ -190,11 +189,6 @@ public class PhoneStatusBarPolicy implements Callback, RotationLockController.Ro
                 context.getString(R.string.accessibility_data_saver_on));
         mIconController.setIconVisibility(mSlotDataSaver, false);
         mDataSaver.addListener(this);
-    }
-
-    public void setStatusBarKeyguardViewManager(
-            StatusBarKeyguardViewManager statusBarKeyguardViewManager) {
-        mStatusBarKeyguardViewManager = statusBarKeyguardViewManager;
     }
 
     public void setZenMode(int zen) {
@@ -392,7 +386,7 @@ public class PhoneStatusBarPolicy implements Callback, RotationLockController.Ro
         if (DEBUG) Log.v(TAG, "updateManagedProfile: mManagedProfileFocused: "
                 + mManagedProfileFocused);
         final boolean showIcon;
-        if (mManagedProfileFocused && !mStatusBarKeyguardViewManager.isShowing()) {
+        if (mManagedProfileFocused) {
             showIcon = true;
             mIconController.setIcon(mSlotManagedProfile,
                     R.drawable.stat_sys_managed_profile_status,
