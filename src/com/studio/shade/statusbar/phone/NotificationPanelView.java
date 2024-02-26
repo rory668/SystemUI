@@ -41,7 +41,6 @@ import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.android.internal.logging.MetricsLogger;
-import com.android.keyguard.KeyguardStatusView;
 import com.studio.shade.AutoReinflateContainer;
 import com.studio.shade.AutoReinflateContainer.InflateListener;
 import com.studio.shade.DejankUtils;
@@ -337,36 +336,6 @@ public class NotificationPanelView extends PanelView implements
             }
         });
         mQsSizeChangeAnimator.start();
-    }
-
-    private void startClockAnimation(int y) {
-        if (mClockAnimationTarget == y) {
-            return;
-        }
-        mClockAnimationTarget = y;
-        getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
-            @Override
-            public boolean onPreDraw() {
-                getViewTreeObserver().removeOnPreDrawListener(this);
-                if (mClockAnimator != null) {
-                    mClockAnimator.removeAllListeners();
-                    mClockAnimator.cancel();
-                }
-                mClockAnimator = ObjectAnimator
-                        .ofFloat(mKeyguardStatusView, View.Y, mClockAnimationTarget);
-                mClockAnimator.setInterpolator(Interpolators.FAST_OUT_SLOW_IN);
-                mClockAnimator.setDuration(StackStateAnimator.ANIMATION_DURATION_STANDARD);
-                mClockAnimator.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        mClockAnimator = null;
-                        mClockAnimationTarget = -1;
-                    }
-                });
-                mClockAnimator.start();
-                return true;
-            }
-        });
     }
 
     private void updateClock(float alpha, float scale) {
