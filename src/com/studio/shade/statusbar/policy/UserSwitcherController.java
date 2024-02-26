@@ -789,13 +789,6 @@ public class UserSwitcherController {
         }
     };
 
-    private final KeyguardMonitor.Callback mCallback = new KeyguardMonitor.Callback() {
-        @Override
-        public void onKeyguardChanged() {
-            notifyAdapters();
-        }
-    };
-
     private final class ExitGuestDialog extends SystemUIDialog implements
             DialogInterface.OnClickListener {
 
