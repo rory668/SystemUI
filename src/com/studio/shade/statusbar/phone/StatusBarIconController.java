@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import com.android.internal.statusbar.StatusBarIcon;
 import com.studio.shade.BatteryMeterView;
 import com.studio.shade.FontSizeUtils;
@@ -70,13 +71,11 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
     private LinearLayout mSystemIconArea;
     private LinearLayout mStatusIcons;
     private SignalClusterView mSignalCluster;
-    private LinearLayout mStatusIconsKeyguard;
-
+    
     private NotificationIconAreaController mNotificationIconAreaController;
     private View mNotificationIconAreaInner;
 
     private BatteryMeterView mBatteryMeterView;
-    private BatteryMeterView mBatteryMeterViewKeyguard;
     private TextView mClock;
 
     private int mIconSize;
@@ -127,10 +126,7 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
                 (ViewGroup) statusBar.findViewById(R.id.notification_icon_area);
         notificationIconArea.addView(mNotificationIconAreaInner);
 
-        mStatusIconsKeyguard = (LinearLayout) keyguardStatusBar.findViewById(R.id.statusIcons);
-
         mBatteryMeterView = (BatteryMeterView) statusBar.findViewById(R.id.battery);
-        mBatteryMeterViewKeyguard = (BatteryMeterView) keyguardStatusBar.findViewById(R.id.battery);
         scaleBatteryMeterViews(context);
 
         mClock = (TextView) statusBar.findViewById(R.id.clock);
@@ -166,7 +162,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         scaledLayoutParams.setMarginsRelative(0, 0, 0, marginBottom);
 
         mBatteryMeterView.setLayoutParams(scaledLayoutParams);
-        mBatteryMeterViewKeyguard.setLayoutParams(scaledLayoutParams);
     }
 
     @Override
@@ -216,8 +211,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
 
         view = new StatusBarIconView(mContext, slot, null, blocked);
         view.set(icon);
-        mStatusIconsKeyguard.addView(view, viewIndex, new LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, mIconSize));
         applyIconTint();
     }
 
@@ -285,7 +278,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         super.removeIcon(index);
         int viewIndex = getViewIndex(index);
         mStatusIcons.removeViewAt(viewIndex);
-        mStatusIconsKeyguard.removeViewAt(viewIndex);
     }
 
     @Override
@@ -306,8 +298,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
     private void handleSet(int index, StatusBarIcon icon) {
         int viewIndex = getViewIndex(index);
         StatusBarIconView view = (StatusBarIconView) mStatusIcons.getChildAt(viewIndex);
-        view.set(icon);
-        view = (StatusBarIconView) mStatusIconsKeyguard.getChildAt(viewIndex);
         view.set(icon);
         applyIconTint();
     }
@@ -395,15 +385,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
                 // both hide and show in the same frame before the animation actually gets started.
                 // cancel() doesn't really remove the end action.
                 .withEndAction(null);
-
-        // Synchronize the motion with the Keyguard fading if necessary.
-        if (mPhoneStatusBar.isKeyguardFadingAway()) {
-            v.animate()
-                    .setDuration(mPhoneStatusBar.getKeyguardFadingAwayDuration())
-                    .setInterpolator(Interpolators.LINEAR_OUT_SLOW_IN)
-                    .setStartDelay(mPhoneStatusBar.getKeyguardFadingAwayDelay())
-                    .start();
-        }
     }
 
     /**
