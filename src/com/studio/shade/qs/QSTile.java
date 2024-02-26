@@ -42,7 +42,6 @@ import com.studio.shade.statusbar.policy.CastController;
 import com.studio.shade.statusbar.policy.NightModeController;
 import com.studio.shade.statusbar.policy.FlashlightController;
 import com.studio.shade.statusbar.policy.HotspotController;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
 import com.studio.shade.statusbar.policy.Listenable;
 import com.studio.shade.statusbar.policy.LocationController;
 import com.studio.shade.statusbar.policy.NetworkController;
@@ -243,7 +242,6 @@ public abstract class QSTile<TState extends State> {
 
     protected void handleLongClick() {
         MetricsLogger.action(mContext, MetricsEvent.ACTION_QS_LONG_PRESS, getTileSpec());
-        mHost.startActivityDismissingKeyguard(getLongClickIntent());
     }
 
     public abstract Intent getLongClickIntent();
@@ -367,7 +365,6 @@ public abstract class QSTile<TState extends State> {
                     if (mState.disabledByPolicy) {
                         Intent intent = RestrictedLockUtils.getShowAdminSupportDetailsIntent(
                                 mContext, mState.enforcedAdmin);
-                        mHost.startActivityDismissingKeyguard(intent);
                     } else {
                         mAnnounceNextStateChange = true;
                         handleClick();
@@ -422,9 +419,6 @@ public abstract class QSTile<TState extends State> {
     }
 
     public interface Host {
-        void startActivityDismissingKeyguard(Intent intent);
-        void startActivityDismissingKeyguard(PendingIntent intent);
-        void startRunnableDismissingKeyguard(Runnable runnable);
         void warn(String message, Throwable t);
         void collapsePanels();
         void animateToggleQSExpansion();
@@ -442,7 +436,6 @@ public abstract class QSTile<TState extends State> {
         HotspotController getHotspotController();
         CastController getCastController();
         FlashlightController getFlashlightController();
-        KeyguardMonitor getKeyguardMonitor();
         UserSwitcherController getUserSwitcherController();
         UserInfoController getUserInfoController();
         BatteryController getBatteryController();
