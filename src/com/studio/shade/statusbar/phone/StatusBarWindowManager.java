@@ -26,8 +26,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.android.keyguard.R;
-import com.studio.shade.keyguard.KeyguardViewMediator;
 import com.studio.shade.statusbar.BaseStatusBar;
 import com.studio.shade.statusbar.RemoteInputController;
 import com.studio.shade.statusbar.StatusBarState;
