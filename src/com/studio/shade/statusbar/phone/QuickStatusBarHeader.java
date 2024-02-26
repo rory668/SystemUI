@@ -33,7 +33,6 @@ import android.widget.Toast;
 
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto;
-import com.android.keyguard.KeyguardStatusView;
 import com.studio.shade.FontSizeUtils;
 import com.studio.shade.R;
 import com.studio.shade.qs.QSAnimator;
@@ -230,14 +229,6 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
     @Override
     public void onNextAlarmChanged(AlarmManager.AlarmClockInfo nextAlarm) {
         mNextAlarm = nextAlarm;
-        if (nextAlarm != null) {
-            String alarmString = KeyguardStatusView.formatNextAlarm(getContext(), nextAlarm);
-            mAlarmStatus.setText(alarmString);
-            mAlarmStatus.setContentDescription(mContext.getString(
-                    R.string.accessibility_quick_settings_alarm, alarmString));
-            mAlarmStatusCollapsed.setContentDescription(mContext.getString(
-                    R.string.accessibility_quick_settings_alarm, alarmString));
-        }
         if (mAlarmShowing != (nextAlarm != null)) {
             mAlarmShowing = nextAlarm != null;
             updateEverything();
@@ -352,20 +343,17 @@ public class QuickStatusBarHeader extends BaseStatusBarHeader implements
             MetricsLogger.action(mContext,
                     MetricsProto.MetricsEvent.ACTION_QS_EXPANDED_SETTINGS_LAUNCH);
             if (mSettingsButton.isTunerClick()) {
-                mHost.startRunnableDismissingKeyguard(() -> post(() -> {
-                    if (TunerService.isTunerEnabled(mContext)) {
-                        TunerService.showResetRequest(mContext, () -> {
-                            // Relaunch settings so that the tuner disappears.
-                            startSettingsActivity();
-                        });
-                    } else {
-                        Toast.makeText(getContext(), R.string.tuner_toast,
-                                Toast.LENGTH_LONG).show();
-                        TunerService.setTunerEnabled(mContext, true);
-                    }
+                if (TunerService.isTunerEnabled(mContext)) {
+                    TunerService.showResetRequest(mContext, () -> {
+                        // Relaunch settings so that the tuner disappears.
+                        startSettingsActivity();
+                    });
+                } else {
+                    Toast.makeText(getContext(), R.string.tuner_toast,
+                         Toast.LENGTH_LONG).show();
+                    TunerService.setTunerEnabled(mContext, true);
                     startSettingsActivity();
-
-                }));
+                }
             } else {
                 startSettingsActivity();
             }
