@@ -916,10 +916,6 @@ public class NotificationPanelView extends PanelView implements
                     R.string.accessibility_desc_quick_settings));
             mLastAnnouncementWasQuickSettings = true;
         }
-        if (mQsFullyExpanded && mFalsingManager.shouldEnforceBouncer()) {
-            mStatusBar.executeRunnableDismissingKeyguard(null, null /* cancelAction */,
-                    false /* dismissShade */, true /* afterKeyguardGone */, false /* deferred */);
-        }
         if (DEBUG) {
             invalidate();
         }
