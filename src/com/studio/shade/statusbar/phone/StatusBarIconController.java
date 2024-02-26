@@ -109,7 +109,7 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         }
     };
 
-    public StatusBarIconController(Context context, View statusBar, View keyguardStatusBar,
+    public StatusBarIconController(Context context, View statusBar,
             PhoneStatusBar phoneStatusBar) {
         mContext = context;
         mPhoneStatusBar = phoneStatusBar;
@@ -233,10 +233,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
         int height = mContext.getResources().getDimensionPixelSize(
                 R.dimen.status_bar_icon_drawing_size);
         ImageView imageView = (ImageView) mStatusIcons.getChildAt(viewIndex);
-        imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        imageView.setAdjustViewBounds(true);
-        setHeightAndCenter(imageView, height);
-        imageView = (ImageView) mStatusIconsKeyguard.getChildAt(viewIndex);
         imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
         imageView.setAdjustViewBounds(true);
         setHeightAndCenter(imageView, height);
@@ -568,12 +564,6 @@ public class StatusBarIconController extends StatusBarIconList implements Tunabl
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, mIconSize);
             lp.setMargins(mIconHPadding, 0, mIconHPadding, 0);
-            child.setLayoutParams(lp);
-        }
-        for (int i = 0; i < mStatusIconsKeyguard.getChildCount(); i++) {
-            View child = mStatusIconsKeyguard.getChildAt(i);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, mIconSize);
             child.setLayoutParams(lp);
         }
         scaleBatteryMeterViews(mContext);
