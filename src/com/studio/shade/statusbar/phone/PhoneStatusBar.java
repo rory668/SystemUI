@@ -327,6 +327,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     boolean mExpandedVisible;
 
+    boolean mLeaveOpenOnKeyguardHide;
+
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
 
     // the tracker view
