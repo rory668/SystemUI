@@ -970,11 +970,9 @@ public class NotificationPanelView extends PanelView implements
             // notifications (mostly on tablets). maxNotifications denotes the normal top padding
             // on Keyguard, maxQs denotes the top padding from the quick settings panel. We need to
             // take the maximum and linearly interpolate with the panel expansion for a nice motion.
-            int maxNotifications = mClockPositionResult.stackScrollerPadding
-                    - mClockPositionResult.stackScrollerPaddingAdjustment;
             int maxQs = getTempQsMaxExpansion();
             int max = mStatusBarState == StatusBarState.KEYGUARD
-                    ? Math.max(maxNotifications, maxQs)
+                    ? Math.max(maxQs)
                     : maxQs;
             return (int) interpolate(getExpandedFraction(),
                     mQsMinExpansionHeight, max);
@@ -1081,7 +1079,7 @@ public class NotificationPanelView extends PanelView implements
         if (!mQsExpansionEnabled || mCollapsedOnDown) {
             return false;
         }
-        View header = mKeyguardShowing ? mKeyguardStatusBar : mQsContainer.getHeader();
+        View header = mQsContainer.getHeader();
         boolean onHeader = x >= mQsAutoReinflateContainer.getX()
                 && x <= mQsAutoReinflateContainer.getX() + mQsAutoReinflateContainer.getWidth()
                 && y >= header.getTop() && y <= header.getBottom();
@@ -1152,7 +1150,6 @@ public class NotificationPanelView extends PanelView implements
         }
         updateStackHeight(expandedHeight);
         updateHeader();
-        updateUnlockIcon();
         updateNotificationTranslucency();
         updatePanelExpanded();
         mNotificationStackScroller.setShadeExpanded(!isFullyCollapsed());
@@ -1207,9 +1204,7 @@ public class NotificationPanelView extends PanelView implements
             maxQsHeight = (int) mQsSizeChangeAnimator.getAnimatedValue();
         }
         float totalHeight = Math.max(
-                maxQsHeight, mStatusBarState == StatusBarState.KEYGUARD
-                        ? mClockPositionResult.stackScrollerPadding - mTopPaddingAdjustment
-                        : 0)
+                maxQsHeight, 0)
                 + notificationHeight;
         if (totalHeight > mNotificationStackScroller.getHeight()) {
             float fullyCollapsedHeight = maxQsHeight
@@ -1246,32 +1241,10 @@ public class NotificationPanelView extends PanelView implements
         return mNotificationStackScroller.getCurrentOverScrolledPixels(true /* top */);
     }
 
-    private void updateUnlockIcon() {
-        if (mStatusBar.getBarState() == StatusBarState.KEYGUARD
-                || mStatusBar.getBarState() == StatusBarState.SHADE_LOCKED) {
-            boolean active = getMaxPanelHeight() - getExpandedHeight() > mUnlockMoveDistance;
-            KeyguardAffordanceView lockIcon = mKeyguardBottomArea.getLockIcon();
-            if (active && !mUnlockIconActive && mTracking) {
-                lockIcon.setImageAlpha(1.0f, true, 150, Interpolators.FAST_OUT_LINEAR_IN, null);
-                lockIcon.setImageScale(LOCK_ICON_ACTIVE_SCALE, true, 150,
-                        Interpolators.FAST_OUT_LINEAR_IN);
-            } else if (!active && mUnlockIconActive && mTracking) {
-                lockIcon.setImageAlpha(lockIcon.getRestingAlpha(), true /* animate */,
-                        150, Interpolators.FAST_OUT_LINEAR_IN, null);
-                lockIcon.setImageScale(1.0f, true, 150,
-                        Interpolators.FAST_OUT_LINEAR_IN);
-            }
-            mUnlockIconActive = active;
-        }
-    }
-
     /**
      * Hides the header when notifications are colliding with it.
      */
     private void updateHeader() {
-        if (mStatusBar.getBarState() == StatusBarState.KEYGUARD) {
-            updateHeaderKeyguardAlpha();
-        }
         updateQsExpansion();
     }
 
@@ -1289,46 +1262,6 @@ public class NotificationPanelView extends PanelView implements
                     - mQsMinExpansionHeight;
         }
         return Math.min(0, translation);
-    }
-
-    /**
-     * @return the alpha to be used to fade out the contents on Keyguard (status bar, bottom area)
-     *         during swiping up
-     */
-    private float getKeyguardContentsAlpha() {
-        float alpha;
-        if (mStatusBar.getBarState() == StatusBarState.KEYGUARD) {
-
-            // When on Keyguard, we hide the header as soon as the top card of the notification
-            // stack scroller is close enough (collision distance) to the bottom of the header.
-            alpha = getNotificationsTopY()
-                    /
-                    (mKeyguardStatusBar.getHeight() + mNotificationsHeaderCollideDistance);
-        } else {
-
-            // In SHADE_LOCKED, the top card is already really close to the header. Hide it as
-            // soon as we start translating the stack.
-            alpha = getNotificationsTopY() / mKeyguardStatusBar.getHeight();
-        }
-        alpha = MathUtils.constrain(alpha, 0, 1);
-        alpha = (float) Math.pow(alpha, 0.75);
-        return alpha;
-    }
-
-    private void updateHeaderKeyguardAlpha() {
-        float alphaQsExpansion = 1 - Math.min(1, getQsExpansionFraction() * 2);
-        mKeyguardStatusBar.setAlpha(Math.min(getKeyguardContentsAlpha(), alphaQsExpansion)
-                * mKeyguardStatusBarAnimateAlpha);
-        mKeyguardStatusBar.setVisibility(mKeyguardStatusBar.getAlpha() != 0f
-                && !mDozing ? VISIBLE : INVISIBLE);
-    }
-
-    private void updateKeyguardBottomAreaAlpha() {
-        float alpha = Math.min(getKeyguardContentsAlpha(), 1 - getQsExpansionFraction());
-        mKeyguardBottomArea.setAlpha(alpha);
-        mKeyguardBottomArea.setImportantForAccessibility(alpha == 0f
-                ? IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
-                : IMPORTANT_FOR_ACCESSIBILITY_AUTO);
     }
 
     private float getNotificationsTopY() {
@@ -1385,7 +1318,6 @@ public class NotificationPanelView extends PanelView implements
 
     private void setListening(boolean listening) {
         mQsContainer.setListening(listening);
-        mKeyguardStatusBar.setListening(listening);
     }
 
     @Override
@@ -1419,10 +1351,6 @@ public class NotificationPanelView extends PanelView implements
         if (mQsFullyExpanded) {
             mQsExpandImmediate = true;
         }
-        if (mStatusBar.getBarState() == StatusBarState.KEYGUARD
-                || mStatusBar.getBarState() == StatusBarState.SHADE_LOCKED) {
-            mAfforanceHelper.animateHideLeftRightIcon();
-        }
         mNotificationStackScroller.onPanelTrackingStarted();
     }
 
@@ -1435,18 +1363,6 @@ public class NotificationPanelView extends PanelView implements
                     0.0f, true /* onTop */, true /* animate */);
         }
         mNotificationStackScroller.onPanelTrackingStopped();
-        if (expand && (mStatusBar.getBarState() == StatusBarState.KEYGUARD
-                || mStatusBar.getBarState() == StatusBarState.SHADE_LOCKED)) {
-            if (!mHintAnimationRunning) {
-                mAfforanceHelper.reset(true);
-            }
-        }
-        if (!expand && (mStatusBar.getBarState() == StatusBarState.KEYGUARD
-                || mStatusBar.getBarState() == StatusBarState.SHADE_LOCKED)) {
-            KeyguardAffordanceView lockIcon = mKeyguardBottomArea.getLockIcon();
-            lockIcon.setImageAlpha(0.0f, true, 100, Interpolators.FAST_OUT_LINEAR_IN, null);
-            lockIcon.setImageScale(2.0f, true, 100, Interpolators.FAST_OUT_LINEAR_IN);
-        }
     }
 
     @Override
@@ -1476,7 +1392,6 @@ public class NotificationPanelView extends PanelView implements
     @Override
     protected void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        mAfforanceHelper.onConfigurationChanged();
         if (newConfig.orientation != mLastOrientation) {
             resetVerticalPanelPosition();
         }
@@ -1497,7 +1412,6 @@ public class NotificationPanelView extends PanelView implements
     @Override
     public void onRtlPropertiesChanged(int layoutDirection) {
         if (layoutDirection != mOldLayoutDirection) {
-            mAfforanceHelper.onRtlPropertiesChanged();
             mOldLayoutDirection = layoutDirection;
         }
     }
