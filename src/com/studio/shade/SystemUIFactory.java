@@ -22,7 +22,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.android.internal.widget.LockPatternUtils;
-import com.android.keyguard.ViewMediatorCallback;
 import com.studio.shade.statusbar.ScrimView;
 import com.studio.shade.statusbar.phone.NotificationIconAreaController;
 import com.studio.shade.statusbar.phone.PhoneStatusBar;
@@ -35,7 +34,6 @@ import com.studio.shade.statusbar.policy.BluetoothController;
 import com.studio.shade.statusbar.policy.CastController;
 import com.studio.shade.statusbar.policy.FlashlightController;
 import com.studio.shade.statusbar.policy.HotspotController;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
 import com.studio.shade.statusbar.policy.LocationController;
 import com.studio.shade.statusbar.policy.NetworkController;
 import com.studio.shade.statusbar.policy.NextAlarmController;
@@ -91,11 +89,11 @@ public class SystemUIFactory {
             ZenModeController zen, HotspotController hotspot,
             CastController cast, FlashlightController flashlight,
             UserSwitcherController userSwitcher, UserInfoController userInfo,
-            KeyguardMonitor keyguard, SecurityController security,
+            SecurityController security,
             BatteryController battery, StatusBarIconController iconController,
             NextAlarmController nextAlarmController) {
         return new QSTileHost(context, statusBar, bluetooth, location, rotation, network, zen,
-                hotspot, cast, flashlight, userSwitcher, userInfo, keyguard, security, battery,
+                hotspot, cast, flashlight, userSwitcher, userInfo, security, battery,
                 iconController, nextAlarmController);
     }
 
