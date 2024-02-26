@@ -26,7 +26,6 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.studio.shade.R;
 import com.studio.shade.qs.QSTile;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
 import com.studio.shade.statusbar.policy.LocationController;
 import com.studio.shade.statusbar.policy.LocationController.LocationSettingsChangeCallback;
 
@@ -41,13 +40,11 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
                     R.drawable.ic_signal_location_enable);
 
     private final LocationController mController;
-    private final KeyguardMonitor mKeyguard;
     private final Callback mCallback = new Callback();
 
     public LocationTile(Host host) {
         super(host);
         mController = host.getLocationController();
-        mKeyguard = host.getKeyguardMonitor();
     }
 
     @Override
@@ -59,10 +56,8 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
     public void setListening(boolean listening) {
         if (listening) {
             mController.addSettingsChangedCallback(mCallback);
-            mKeyguard.addCallback(mCallback);
         } else {
             mController.removeSettingsChangedCallback(mCallback);
-            mKeyguard.removeCallback(mCallback);
         }
     }
 
@@ -73,18 +68,6 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     protected void handleClick() {
-        if (mKeyguard.isSecure() && mKeyguard.isShowing()) {
-            mHost.startRunnableDismissingKeyguard(new Runnable() {
-                @Override
-                public void run() {
-                    final boolean wasEnabled = (Boolean) mState.value;
-                    mHost.openPanels();
-                    MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
-                    mController.setLocationEnabled(!wasEnabled);
-                }
-            });
-            return;
-        }
         final boolean wasEnabled = (Boolean) mState.value;
         MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
         mController.setLocationEnabled(!wasEnabled);
@@ -133,15 +116,9 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
         }
     }
 
-    private final class Callback implements LocationSettingsChangeCallback,
-            KeyguardMonitor.Callback {
+    private final class Callback implements LocationSettingsChangeCallback {
         @Override
         public void onLocationSettingsChanged(boolean enabled) {
-            refreshState();
-        }
-
-        @Override
-        public void onKeyguardChanged() {
             refreshState();
         }
     };
