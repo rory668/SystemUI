@@ -101,8 +101,7 @@ public abstract class PanelView extends FrameLayout {
     private boolean mTouchDisabled;
 
     private Interpolator mBounceInterpolator;
-    protected KeyguardBottomAreaView mKeyguardBottomArea;
-
+    
     private boolean mPeekPending;
     private boolean mCollapseAfterPeek;
 
@@ -979,21 +978,6 @@ public abstract class PanelView extends FrameLayout {
         });
         animator.start();
         mHeightAnimator = animator;
-        mKeyguardBottomArea.getIndicationView().animate()
-                .translationY(-mHintDistance)
-                .setDuration(250)
-                .setInterpolator(Interpolators.FAST_OUT_SLOW_IN)
-                .withEndAction(new Runnable() {
-                    @Override
-                    public void run() {
-                        mKeyguardBottomArea.getIndicationView().animate()
-                                .translationY(0)
-                                .setDuration(450)
-                                .setInterpolator(mBounceInterpolator)
-                                .start();
-                    }
-                })
-                .start();
     }
 
     /**
