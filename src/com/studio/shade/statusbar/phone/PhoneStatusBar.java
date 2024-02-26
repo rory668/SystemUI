@@ -3057,12 +3057,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         final SignalClusterView signalCluster =
                 (SignalClusterView) mStatusBarView.findViewById(R.id.signal_cluster);
-        final SignalClusterView signalClusterKeyguard =
-                (SignalClusterView) mKeyguardStatusBar.findViewById(R.id.signal_cluster);
         final SignalClusterView signalClusterQs =
                 (SignalClusterView) mHeader.findViewById(R.id.signal_cluster);
         mNetworkController.removeSignalCallback(signalCluster);
-        mNetworkController.removeSignalCallback(signalClusterKeyguard);
         mNetworkController.removeSignalCallback(signalClusterQs);
         if (mQSPanel != null && mQSPanel.getHost() != null) {
             mQSPanel.getHost().destroy();
