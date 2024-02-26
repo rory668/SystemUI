@@ -32,7 +32,6 @@ import android.widget.FrameLayout;
 
 import com.studio.shade.R;
 import com.studio.shade.qs.QSPanel;
-import com.studio.shade.statusbar.policy.KeyguardUserSwitcher;
 import com.studio.shade.statusbar.policy.UserSwitcherController;
 
 /**
@@ -41,8 +40,6 @@ import com.studio.shade.statusbar.policy.UserSwitcherController;
 public class MultiUserSwitch extends FrameLayout implements View.OnClickListener {
 
     private QSPanel mQsPanel;
-    private KeyguardUserSwitcher mKeyguardUserSwitcher;
-    private boolean mKeyguardMode;
     private UserSwitcherController.BaseUserAdapter mUserListener;
 
     final UserManager mUserManager;
@@ -81,15 +78,6 @@ public class MultiUserSwitch extends FrameLayout implements View.OnClickListener
         refreshContentDescription();
     }
 
-    public void setKeyguardUserSwitcher(KeyguardUserSwitcher keyguardUserSwitcher) {
-        mKeyguardUserSwitcher = keyguardUserSwitcher;
-    }
-
-    public void setKeyguardMode(boolean keyguardShowing) {
-        mKeyguardMode = keyguardShowing;
-        registerListener();
-    }
-
     private void registerListener() {
         if (mUserManager.isUserSwitcherEnabled() && mUserListener == null) {
 
@@ -114,11 +102,7 @@ public class MultiUserSwitch extends FrameLayout implements View.OnClickListener
     @Override
     public void onClick(View v) {
         if (mUserManager.isUserSwitcherEnabled()) {
-            if (mKeyguardMode) {
-                if (mKeyguardUserSwitcher != null) {
-                    mKeyguardUserSwitcher.show(true /* animate */);
-                }
-            } else if (mQsPanel != null && mUserSwitcherController != null) {
+            if (mQsPanel != null && mUserSwitcherController != null) {
                 View center = getChildCount() > 0 ? getChildAt(0) : this;
 
                 center.getLocationInWindow(mTmpInt2);
