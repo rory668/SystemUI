@@ -55,7 +55,6 @@ import android.widget.TextView;
 
 import com.android.internal.app.AssistUtils;
 import com.studio.shade.R;
-import com.studio.shade.recents.Recents;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -349,19 +348,7 @@ public final class KeyboardShortcuts {
 
     private void showKeyboardShortcuts(int deviceId) {
         retrieveKeyCharacterMap(deviceId);
-        Recents.getSystemServices().requestKeyboardShortcuts(mContext,
-                new KeyboardShortcutsReceiver() {
-                    @Override
-                    public void onKeyboardShortcutsReceived(
-                            final List<KeyboardShortcutGroup> result) {
-                        result.add(getSystemShortcuts());
-                        final KeyboardShortcutGroup appShortcuts = getDefaultApplicationShortcuts();
-                        if (appShortcuts != null) {
-                            result.add(appShortcuts);
-                        }
-                        showKeyboardShortcutsDialog(result);
-                    }
-                }, deviceId);
+        //showKeyboardShortcutsDialog(result);
     }
 
     private void dismissKeyboardShortcuts() {
@@ -382,10 +369,6 @@ public final class KeyboardShortcuts {
                 mContext.getString(R.string.keyboard_shortcut_group_system_back),
                 KeyEvent.KEYCODE_DEL,
                 KeyEvent.META_META_ON));
-        systemGroup.addItem(new KeyboardShortcutInfo(
-                mContext.getString(R.string.keyboard_shortcut_group_system_recents),
-                KeyEvent.KEYCODE_TAB,
-                KeyEvent.META_ALT_ON));
         systemGroup.addItem(new KeyboardShortcutInfo(
                 mContext.getString(
                         R.string.keyboard_shortcut_group_system_notifications),
