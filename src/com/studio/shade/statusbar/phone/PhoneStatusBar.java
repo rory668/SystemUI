@@ -117,8 +117,6 @@ import com.studio.shade.classifier.FalsingLog;
 import com.studio.shade.classifier.FalsingManager;
 import com.studio.shade.qs.QSContainer;
 import com.studio.shade.qs.QSPanel;
-import com.studio.shade.recents.events.activity.AppTransitionFinishedEvent;
-import com.studio.shade.recents.events.activity.UndockingTaskEvent;
 import com.studio.shade.stackdivider.Divider;
 import com.studio.shade.stackdivider.WindowManagerProxy;
 import com.studio.shade.statusbar.ActivatableNotificationView;
@@ -131,7 +129,6 @@ import com.studio.shade.statusbar.EmptyShadeView;
 import com.studio.shade.statusbar.ExpandableNotificationRow;
 import com.studio.shade.statusbar.GestureRecorder;
 import com.studio.shade.statusbar.KeyboardShortcuts;
-import com.studio.shade.statusbar.KeyguardIndicationController;
 import com.studio.shade.statusbar.NotificationData;
 import com.studio.shade.statusbar.NotificationData.Entry;
 import com.studio.shade.statusbar.NotificationOverflowContainer;
@@ -139,7 +136,6 @@ import com.studio.shade.statusbar.RemoteInputController;
 import com.studio.shade.statusbar.ScrimView;
 import com.studio.shade.statusbar.SignalClusterView;
 import com.studio.shade.statusbar.StatusBarState;
-import com.studio.shade.statusbar.phone.UnlockMethodCache.OnUnlockMethodChangedListener;
 import com.studio.shade.statusbar.policy.AccessibilityController;
 import com.studio.shade.statusbar.policy.BatteryController;
 import com.studio.shade.statusbar.policy.BatteryController.BatteryStateChangeCallback;
@@ -187,7 +183,7 @@ import static com.studio.shade.statusbar.phone.BarTransitions.MODE_TRANSPARENT;
 import static com.studio.shade.statusbar.phone.BarTransitions.MODE_WARNING;
 
 public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
-        DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
+        DragDownHelper.DragDownCallback, ActivityStarter,
         HeadsUpManager.OnHeadsUpChangedListener {
     static final String TAG = "PhoneStatusBar";
     public static final boolean DEBUG = BaseStatusBar.DEBUG;
@@ -2023,11 +2019,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     public boolean isScrimSrcModeEnabled() {
         return mScrimSrcModeEnabled;
-    }
-
-    @Override  // UnlockMethodCache.OnUnlockMethodChangedListener
-    public void onUnlockMethodStateChanged() {
-        logStateToEventlog();
     }
 
     @Override
