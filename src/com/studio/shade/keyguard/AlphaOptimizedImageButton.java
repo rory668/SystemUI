@@ -14,7 +14,7 @@
  * limitations under the License
  */
 
-package com.android.keyguard;
+package com.studio.shade.keyguard;
 
 import android.content.Context;
 import android.util.AttributeSet;
