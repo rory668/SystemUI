@@ -23,7 +23,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.TextView;
 
-import com.studio.shade.AlphaOptimizedLinearLayout;
+import com.studio.shade.keyguard.AlphaOptimizedLinearLayout;
 import com.studio.shade.R;
 import com.studio.shade.ViewInvertHelper;
 import com.studio.shade.statusbar.CrossFadeHelper;
