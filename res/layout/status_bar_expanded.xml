@@ -26,11 +26,6 @@
     android:background="@android:color/transparent"
     >
 
-    <include
-        layout="@layout/keyguard_status_view"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
     <com.studio.shade.statusbar.phone.NotificationsQuickSettingsContainer
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -55,21 +50,7 @@
             android:layout_gravity="@integer/notification_panel_layout_gravity"
             android:layout_marginBottom="@dimen/close_handle_underlap" />
 
-        <ViewStub
-            android:id="@+id/keyguard_user_switcher"
-            android:layout="@layout/keyguard_user_switcher"
-            android:layout_height="match_parent"
-            android:layout_width="match_parent" />
-
-        <include
-            layout="@layout/keyguard_status_bar"
-            android:visibility="invisible" />
-
     </com.studio.shade.statusbar.phone.NotificationsQuickSettingsContainer>
-
-    <include
-            layout="@layout/keyguard_bottom_area"
-            android:visibility="gone" />
 
     <com.studio.shade.statusbar.AlphaOptimizedView
         android:id="@+id/qs_navbar_scrim"

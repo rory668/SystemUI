@@ -56,7 +56,7 @@
             android:layout_weight="1"
             android:orientation="horizontal" />
 
-        <com.android.keyguard.AlphaOptimizedLinearLayout android:id="@+id/system_icon_area"
+        <com.studio.shade.keyguard.AlphaOptimizedLinearLayout android:id="@+id/system_icon_area"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:orientation="horizontal"
@@ -74,7 +74,7 @@
                 android:paddingEnd="@dimen/status_bar_clock_end_padding"
                 android:gravity="center_vertical|start"
                 />
-        </com.android.keyguard.AlphaOptimizedLinearLayout>
+        </com.studio.shade.keyguard.AlphaOptimizedLinearLayout>
     </LinearLayout>
 
 </com.studio.shade.statusbar.phone.PhoneStatusBarView>

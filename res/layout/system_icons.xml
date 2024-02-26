@@ -20,7 +20,7 @@
     android:layout_height="match_parent"
     android:gravity="center_vertical">
 
-    <com.android.keyguard.AlphaOptimizedLinearLayout android:id="@+id/statusIcons"
+    <com.studio.shade.keyguard.AlphaOptimizedLinearLayout android:id="@+id/statusIcons"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
