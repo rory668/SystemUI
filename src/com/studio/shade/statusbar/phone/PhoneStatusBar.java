@@ -97,6 +97,7 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.NotificationVisibility;
@@ -116,7 +117,6 @@ import com.studio.shade.classifier.FalsingLog;
 import com.studio.shade.classifier.FalsingManager;
 import com.studio.shade.qs.QSContainer;
 import com.studio.shade.qs.QSPanel;
-import com.studio.shade.recents.ScreenPinningRequest;
 import com.studio.shade.recents.events.EventBus;
 import com.studio.shade.recents.events.activity.AppTransitionFinishedEvent;
 import com.studio.shade.recents.events.activity.UndockingTaskEvent;
@@ -362,8 +362,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat")
         : null;
-
-    private ScreenPinningRequest mScreenPinningRequest;
 
     private int mNavigationIconHints = 0;
     private HandlerThread mHandlerThread;
@@ -645,7 +643,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         notifyUserAboutHiddenNotifications();
 
-        mScreenPinningRequest = new ScreenPinningRequest(mContext);
         mFalsingManager = FalsingManager.getInstance(mContext);
     }
 
@@ -2847,7 +2844,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         repositionNavigationBar();
         updateRowStates();
         mIconController.defineSlots();
-        mScreenPinningRequest.onConfigurationChanged();
         mNetworkController.onConfigurationChanged();
     }
 
