@@ -1432,171 +1432,8 @@ public class NotificationPanelView extends PanelView implements
     }
 
     @Override
-    public void onAnimationToSideStarted(boolean rightPage, float translation, float vel) {
-        boolean start = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? rightPage : !rightPage;
-        mIsLaunchTransitionRunning = true;
-        mLaunchAnimationEndRunnable = null;
-        float displayDensity = mStatusBar.getDisplayDensity();
-        int lengthDp = Math.abs((int) (translation / displayDensity));
-        int velocityDp = Math.abs((int) (vel / displayDensity));
-        if (start) {
-            EventLogTags.writeSysuiLockscreenGesture(
-                    EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_SWIPE_DIALER, lengthDp, velocityDp);
-
-            mFalsingManager.onLeftAffordanceOn();
-            if (mFalsingManager.shouldEnforceBouncer()) {
-                mStatusBar.executeRunnableDismissingKeyguard(new Runnable() {
-                    @Override
-                    public void run() {
-                        mKeyguardBottomArea.launchLeftAffordance();
-                    }
-                }, null, true /* dismissShade */, false /* afterKeyguardGone */,
-                        true /* deferred */);
-            }
-            else {
-                mKeyguardBottomArea.launchLeftAffordance();
-            }
-        } else {
-            if (KeyguardBottomAreaView.CAMERA_LAUNCH_SOURCE_AFFORDANCE.equals(
-                    mLastCameraLaunchSource)) {
-                EventLogTags.writeSysuiLockscreenGesture(
-                        EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_SWIPE_CAMERA,
-                        lengthDp, velocityDp);
-            }
-            mFalsingManager.onCameraOn();
-            if (mFalsingManager.shouldEnforceBouncer()) {
-                mStatusBar.executeRunnableDismissingKeyguard(new Runnable() {
-                    @Override
-                    public void run() {
-                        mKeyguardBottomArea.launchCamera(mLastCameraLaunchSource);
-                    }
-                }, null, true /* dismissShade */, false /* afterKeyguardGone */,
-                    true /* deferred */);
-            }
-            else {
-                mKeyguardBottomArea.launchCamera(mLastCameraLaunchSource);
-            }
-        }
-        mStatusBar.startLaunchTransitionTimeout();
-        mBlockTouches = true;
-    }
-
-    @Override
-    public void onAnimationToSideEnded() {
-        mIsLaunchTransitionRunning = false;
-        mIsLaunchTransitionFinished = true;
-        if (mLaunchAnimationEndRunnable != null) {
-            mLaunchAnimationEndRunnable.run();
-            mLaunchAnimationEndRunnable = null;
-        }
-    }
-
-    @Override
-    protected void startUnlockHintAnimation() {
-        super.startUnlockHintAnimation();
-        startHighlightIconAnimation(getCenterIcon());
-    }
-
-    /**
-     * Starts the highlight (making it fully opaque) animation on an icon.
-     */
-    private void startHighlightIconAnimation(final KeyguardAffordanceView icon) {
-        icon.setImageAlpha(1.0f, true, KeyguardAffordanceHelper.HINT_PHASE1_DURATION,
-                Interpolators.FAST_OUT_SLOW_IN, new Runnable() {
-                    @Override
-                    public void run() {
-                        icon.setImageAlpha(icon.getRestingAlpha(),
-                                true /* animate */, KeyguardAffordanceHelper.HINT_PHASE1_DURATION,
-                                Interpolators.FAST_OUT_SLOW_IN, null);
-                    }
-                });
-    }
-
-    @Override
     public float getMaxTranslationDistance() {
         return (float) Math.hypot(getWidth(), getHeight());
-    }
-
-    @Override
-    public void onSwipingStarted(boolean rightIcon) {
-        mFalsingManager.onAffordanceSwipingStarted(rightIcon);
-        boolean camera = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? !rightIcon
-                : rightIcon;
-        if (camera) {
-            mKeyguardBottomArea.bindCameraPrewarmService();
-        }
-        requestDisallowInterceptTouchEvent(true);
-        mOnlyAffordanceInThisMotion = true;
-        mQsTracking = false;
-    }
-
-    @Override
-    public void onSwipingAborted() {
-        mFalsingManager.onAffordanceSwipingAborted();
-        mKeyguardBottomArea.unbindCameraPrewarmService(false /* launched */);
-    }
-
-    @Override
-    public void onIconClicked(boolean rightIcon) {
-        if (mHintAnimationRunning) {
-            return;
-        }
-        mHintAnimationRunning = true;
-        mAfforanceHelper.startHintAnimation(rightIcon, new Runnable() {
-            @Override
-            public void run() {
-                mHintAnimationRunning = false;
-                mStatusBar.onHintFinished();
-            }
-        });
-        rightIcon = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? !rightIcon : rightIcon;
-        if (rightIcon) {
-            mStatusBar.onCameraHintStarted();
-        } else {
-            if (mKeyguardBottomArea.isLeftVoiceAssist()) {
-                mStatusBar.onVoiceAssistHintStarted();
-            } else {
-                mStatusBar.onPhoneHintStarted();
-            }
-        }
-    }
-
-    @Override
-    public KeyguardAffordanceView getLeftIcon() {
-        return getLayoutDirection() == LAYOUT_DIRECTION_RTL
-                ? mKeyguardBottomArea.getRightView()
-                : mKeyguardBottomArea.getLeftView();
-    }
-
-    @Override
-    public KeyguardAffordanceView getCenterIcon() {
-        return mKeyguardBottomArea.getLockIcon();
-    }
-
-    @Override
-    public KeyguardAffordanceView getRightIcon() {
-        return getLayoutDirection() == LAYOUT_DIRECTION_RTL
-                ? mKeyguardBottomArea.getLeftView()
-                : mKeyguardBottomArea.getRightView();
-    }
-
-    @Override
-    public View getLeftPreview() {
-        return getLayoutDirection() == LAYOUT_DIRECTION_RTL
-                ? mKeyguardBottomArea.getRightPreview()
-                : mKeyguardBottomArea.getLeftPreview();
-    }
-
-    @Override
-    public View getRightPreview() {
-        return getLayoutDirection() == LAYOUT_DIRECTION_RTL
-                ? mKeyguardBottomArea.getLeftPreview()
-                : mKeyguardBottomArea.getRightPreview();
-    }
-
-    @Override
-    public float getAffordanceFalsingFactor() {
-        return mStatusBar.isWakeUpComingFromTouch() ? 1.5f : 1.0f;
     }
 
     @Override
@@ -1680,38 +1517,10 @@ public class NotificationPanelView extends PanelView implements
             factor = 0.4f;
         }
         mEmptyDragAmount = amount * factor;
-        positionClockAndNotifications();
     }
 
     private static float interpolate(float t, float start, float end) {
         return (1 - t) * start + t * end;
-    }
-
-    public void setDozing(boolean dozing, boolean animate) {
-        if (dozing == mDozing) return;
-        mDozing = dozing;
-        if (mStatusBarState == StatusBarState.KEYGUARD) {
-            updateDozingVisibilities(animate);
-        }
-    }
-
-    private void updateDozingVisibilities(boolean animate) {
-        if (mDozing) {
-            mKeyguardStatusBar.setVisibility(View.INVISIBLE);
-            mKeyguardBottomArea.setVisibility(View.INVISIBLE);
-        } else {
-            mKeyguardBottomArea.setVisibility(View.VISIBLE);
-            mKeyguardStatusBar.setVisibility(View.VISIBLE);
-            if (animate) {
-                animateKeyguardStatusBarIn(DOZE_ANIMATION_DURATION);
-                mKeyguardBottomArea.startFinishDozeAnimation();
-            }
-        }
-    }
-
-    @Override
-    public boolean isDozing() {
-        return mDozing;
     }
 
     public void setShadeEmpty(boolean shadeEmpty) {
@@ -1733,10 +1542,6 @@ public class NotificationPanelView extends PanelView implements
         }
     }
 
-    public void setKeyguardUserSwitcher(KeyguardUserSwitcher keyguardUserSwitcher) {
-        mKeyguardUserSwitcher = keyguardUserSwitcher;
-    }
-
     private final Runnable mUpdateHeader = new Runnable() {
         @Override
         public void run() {
@@ -1745,7 +1550,6 @@ public class NotificationPanelView extends PanelView implements
     };
 
     public void onScreenTurningOn() {
-        mKeyguardStatusView.refreshTime();
     }
 
     @Override
@@ -1756,16 +1560,9 @@ public class NotificationPanelView extends PanelView implements
     protected boolean onMiddleClicked() {
         switch (mStatusBar.getBarState()) {
             case StatusBarState.KEYGUARD:
-                if (!mDozingOnDown) {
-                    EventLogTags.writeSysuiLockscreenGesture(
-                            EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_TAP_UNLOCK_HINT,
-                            0 /* lengthDp - N/A */, 0 /* velocityDp - N/A */);
-                    startUnlockHintAnimation();
-                }
                 return true;
             case StatusBarState.SHADE_LOCKED:
                 if (!mQsExpanded) {
-                    mStatusBar.goToKeyguard();
                 }
                 return true;
             case StatusBarState.SHADE:
@@ -1891,7 +1688,6 @@ public class NotificationPanelView extends PanelView implements
 
     protected void updateStackHeight(float stackHeight) {
         mNotificationStackScroller.setStackHeight(stackHeight);
-        updateKeyguardBottomAreaAlpha();
     }
 
     public void setPanelScrimMinFraction(float minFraction) {
