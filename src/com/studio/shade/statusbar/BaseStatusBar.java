@@ -631,8 +631,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
 
-        mRecents = getComponent(Recents.class);
-
         final Configuration currentConfig = mContext.getResources().getConfiguration();
         mLocale = currentConfig.locale;
         mLayoutDirection = TextUtils.getLayoutDirectionFromLocale(mLocale);
