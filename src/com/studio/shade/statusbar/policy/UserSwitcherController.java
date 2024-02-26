@@ -91,7 +91,6 @@ public class UserSwitcherController {
     private final ArrayList<WeakReference<BaseUserAdapter>> mAdapters = new ArrayList<>();
     private final GuestResumeSessionReceiver mGuestResumeSessionReceiver
             = new GuestResumeSessionReceiver();
-    private final KeyguardMonitor mKeyguardMonitor;
     private final Handler mHandler;
     private final ActivityStarter mActivityStarter;
 
@@ -106,11 +105,10 @@ public class UserSwitcherController {
     private Intent mSecondaryUserServiceIntent;
     private SparseBooleanArray mForcePictureLoadForUserId = new SparseBooleanArray(2);
 
-    public UserSwitcherController(Context context, KeyguardMonitor keyguardMonitor,
+    public UserSwitcherController(Context context,
             Handler handler, ActivityStarter activityStarter) {
         mContext = context;
         mGuestResumeSessionReceiver.register(context);
-        mKeyguardMonitor = keyguardMonitor;
         mHandler = handler;
         mActivityStarter = activityStarter;
         mUserManager = UserManager.get(context);
@@ -145,7 +143,6 @@ public class UserSwitcherController {
         // Fetch initial values.
         mSettingsObserver.onChange(false);
 
-        keyguardMonitor.addCallback(mCallback);
         listenForCallState();
 
         refreshUsers(UserHandle.USER_NULL);
@@ -616,12 +613,6 @@ public class UserSwitcherController {
 
         @Override
         public int getCount() {
-            boolean secureKeyguardShowing = mController.mKeyguardMonitor.isShowing()
-                    && mController.mKeyguardMonitor.isSecure()
-                    && !mController.mKeyguardMonitor.canSkipBouncer();
-            if (!secureKeyguardShowing) {
-                return mController.mUsers.size();
-            }
             // The lock screen is secure and showing. Filter out restricted records.
             final int N = mController.mUsers.size();
             int count = 0;
