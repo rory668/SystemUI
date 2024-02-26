@@ -101,7 +101,6 @@ import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
-import com.android.keyguard.KeyguardHostView.OnDismissAction;
 import com.android.keyguard.ViewMediatorCallback;
 import com.studio.shade.AutoReinflateContainer;
 import com.studio.shade.AutoReinflateContainer.InflateListener;
@@ -3415,7 +3414,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     @Override
-    public void onLockedNotificationImportanceChange(OnDismissAction dismissAction) {
+    public void onLockedNotificationImportanceChange() {
     }
 
     @Override
