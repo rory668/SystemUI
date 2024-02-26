@@ -54,11 +54,9 @@ import com.studio.shade.statusbar.ExpandableNotificationRow;
 import com.studio.shade.statusbar.ExpandableView;
 import com.studio.shade.statusbar.FlingAnimationUtils;
 import com.studio.shade.statusbar.GestureRecorder;
-import com.studio.shade.statusbar.KeyguardAffordanceView;
 import com.studio.shade.statusbar.NotificationData;
 import com.studio.shade.statusbar.StatusBarState;
 import com.studio.shade.statusbar.policy.HeadsUpManager;
-import com.studio.shade.statusbar.policy.KeyguardUserSwitcher;
 import com.studio.shade.statusbar.stack.NotificationStackScrollLayout;
 import com.studio.shade.statusbar.stack.StackStateAnimator;
 
@@ -67,7 +65,7 @@ import java.util.List;
 public class NotificationPanelView extends PanelView implements
         ExpandableView.OnHeightChangedListener,
         View.OnClickListener, NotificationStackScrollLayout.OnOverscrollTopChangedListener,
-        KeyguardAffordanceHelper.Callback, NotificationStackScrollLayout.OnEmptySpaceClickListener,
+        NotificationStackScrollLayout.OnEmptySpaceClickListener,
         HeadsUpManager.OnHeadsUpChangedListener {
 
     private static final boolean DEBUG = false;
