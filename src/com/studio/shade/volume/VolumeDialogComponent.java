@@ -112,10 +112,6 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
     }
 
     private void sendUserActivity() {
-        final KeyguardViewMediator kvm = mSysui.getComponent(KeyguardViewMediator.class);
-        if (kvm != null) {
-            kvm.userActivity();
-        }
     }
 
     private void applyConfiguration() {
