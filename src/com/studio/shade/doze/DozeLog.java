@@ -21,9 +21,6 @@ import android.os.Build;
 import android.util.Log;
 import android.util.TimeUtils;
 
-import com.android.keyguard.KeyguardUpdateMonitor;
-import com.android.keyguard.KeyguardUpdateMonitorCallback;
-
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -100,7 +97,6 @@ public class DozeLog {
                     sProxStats[i][1] = new SummaryStats();
                 }
                 log("init");
-                KeyguardUpdateMonitor.getInstance(context).registerCallback(sKeyguardCallback);
             }
         }
     }
@@ -125,11 +121,6 @@ public class DozeLog {
         sEmergencyCallStats.append();
     }
 
-    public static void traceKeyguardBouncerChanged(boolean showing) {
-        if (!ENABLED) return;
-        log("bouncer " + showing);
-    }
-
     public static void traceScreenOn() {
         if (!ENABLED) return;
         log("screenOn pulsing=" + sPulsing);
@@ -140,14 +131,6 @@ public class DozeLog {
     public static void traceScreenOff(int why) {
         if (!ENABLED) return;
         log("screenOff why=" + why);
-    }
-
-    public static void traceKeyguard(boolean showing) {
-        if (!ENABLED) return;
-        log("keyguard " + showing);
-        if (!showing) {
-            sPulsing = false;
-        }
     }
 
     public static void traceProximityResult(Context context, boolean near, long millis,
@@ -230,32 +213,4 @@ public class DozeLog {
             pw.println();
         }
     }
-
-    private static final KeyguardUpdateMonitorCallback sKeyguardCallback =
-            new KeyguardUpdateMonitorCallback() {
-        @Override
-        public void onEmergencyCallAction() {
-            traceEmergencyCall();
-        }
-
-        @Override
-        public void onKeyguardBouncerChanged(boolean bouncer) {
-            traceKeyguardBouncerChanged(bouncer);
-        }
-
-        @Override
-        public void onStartedWakingUp() {
-            traceScreenOn();
-        }
-
-        @Override
-        public void onFinishedGoingToSleep(int why) {
-            traceScreenOff(why);
-        }
-
-        @Override
-        public void onKeyguardVisibilityChanged(boolean showing) {
-            traceKeyguard(showing);
-        }
-    };
 }
