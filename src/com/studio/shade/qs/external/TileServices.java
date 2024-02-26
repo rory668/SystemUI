@@ -37,7 +37,6 @@ import android.util.Log;
 import com.android.internal.statusbar.StatusBarIcon;
 import com.studio.shade.statusbar.phone.QSTileHost;
 import com.studio.shade.statusbar.phone.StatusBarIconController;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -284,14 +283,12 @@ public class TileServices extends IQSService.Stub {
 
     @Override
     public boolean isLocked() {
-        KeyguardMonitor keyguardMonitor = mHost.getKeyguardMonitor();
-        return keyguardMonitor.isShowing();
+        return false;
     }
 
     @Override
     public boolean isSecure() {
-        KeyguardMonitor keyguardMonitor = mHost.getKeyguardMonitor();
-        return keyguardMonitor.isSecure() && keyguardMonitor.isShowing();
+        return false;
     }
 
     private CustomTile getTileForComponent(ComponentName component) {
