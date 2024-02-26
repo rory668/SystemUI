@@ -95,11 +95,9 @@ import com.android.internal.widget.LockPatternUtils;
 import com.studio.shade.DejankUtils;
 import com.studio.shade.Interpolators;
 import com.studio.shade.R;
-import com.studio.shade.RecentsComponent;
 import com.studio.shade.SwipeHelper;
 import com.studio.shade.SystemUI;
 import com.studio.shade.assist.AssistManager;
-import com.studio.shade.recents.Recents;
 import com.studio.shade.statusbar.NotificationData.Entry;
 import com.studio.shade.statusbar.NotificationGuts.OnGutsClosedListener;
 import com.studio.shade.statusbar.phone.NavigationBarView;
@@ -231,8 +229,6 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected Display mDisplay;
 
     private boolean mDeviceProvisioned = false;
-
-    protected RecentsComponent mRecents;
 
     // which notification is currently being longpress-examined by the user
     private NotificationGuts mNotificationGutsExposed;
