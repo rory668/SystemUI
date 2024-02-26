@@ -328,6 +328,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     boolean mExpandedVisible;
 
     boolean mLeaveOpenOnKeyguardHide;
+    private long mKeyguardFadingAwayDelay;
+    private long mKeyguardFadingAwayDuration;
 
     private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
 
