@@ -1586,9 +1586,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                 }
             });
 
-            final boolean afterKeyguardGone = intent.isActivity()
-                    && PreviewInflater.wouldLaunchResolverActivity(mContext, intent.getIntent(),
-                            mCurrentUserId);
+            final boolean afterKeyguardGone = intent.isActivity();
         }
 
         private boolean shouldAutoCancel(StatusBarNotification sbn) {
