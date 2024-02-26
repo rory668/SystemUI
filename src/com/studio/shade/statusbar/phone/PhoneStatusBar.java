@@ -699,16 +699,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             mNotificationPanelDebugText.setVisibility(View.VISIBLE);
         }
 
-        try {
-            boolean showNav = mWindowManagerService.hasNavigationBar();
-            if (DEBUG) Log.v(TAG, "hasNavigationBar=" + showNav);
-            if (showNav) {
-                createNavigationBarView(context);
-            }
-        } catch (RemoteException ex) {
-            // no window manager? good luck with that
-        }
-
         mAssistManager = new AssistManager(this, context);
 
         // figure out which pixel-format to use for the status bar.
@@ -801,7 +791,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mLightStatusBarController = new LightStatusBarController(mIconController,
                 mBatteryController);
         if (UserManager.get(mContext).isUserSwitcherEnabled()) {
-            mUserSwitcherController = new UserSwitcherController(mContext, mKeyguardMonitor,
+            mUserSwitcherController = new UserSwitcherController(mContext,
                     mHandler, this);
             createUserSwitcher();
         }
