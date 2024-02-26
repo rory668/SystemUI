@@ -57,7 +57,6 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener,
 
     protected final ScrimView mScrimBehind;
     private final ScrimView mScrimInFront;
-    private final UnlockMethodCache mUnlockMethodCache;
     private final View mHeadsUpScrim;
 
     private float mScrimBehindAlpha = SCRIM_BEHIND_ALPHA;
@@ -98,7 +97,6 @@ public class ScrimController implements ViewTreeObserver.OnPreDrawListener,
         mScrimInFront = scrimInFront;
         mHeadsUpScrim = headsUpScrim;
         final Context context = scrimBehind.getContext();
-        mUnlockMethodCache = UnlockMethodCache.getInstance(context);
         updateHeadsUpScrim(false);
     }
 
