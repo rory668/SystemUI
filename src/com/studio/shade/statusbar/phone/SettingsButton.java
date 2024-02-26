@@ -27,7 +27,7 @@ import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.android.keyguard.AlphaOptimizedImageButton;
+import com.studio.shade.keyguard.AlphaOptimizedImageButton;
 import com.studio.shade.Interpolators;
 
 public class SettingsButton extends AlphaOptimizedImageButton {
