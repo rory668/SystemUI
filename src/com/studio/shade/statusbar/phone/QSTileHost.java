@@ -62,7 +62,6 @@ import com.studio.shade.statusbar.policy.NextAlarmController;
 import com.studio.shade.statusbar.policy.NightModeController;
 import com.studio.shade.statusbar.policy.FlashlightController;
 import com.studio.shade.statusbar.policy.HotspotController;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
 import com.studio.shade.statusbar.policy.LocationController;
 import com.studio.shade.statusbar.policy.NetworkController;
 import com.studio.shade.statusbar.policy.RotationLockController;
@@ -103,7 +102,6 @@ public class QSTileHost implements QSTile.Host, Tunable {
     private final FlashlightController mFlashlight;
     private final UserSwitcherController mUserSwitcherController;
     private final UserInfoController mUserInfoController;
-    private final KeyguardMonitor mKeyguard;
     private final SecurityController mSecurity;
     private final BatteryController mBattery;
     private final StatusBarIconController mIconController;
@@ -123,7 +121,7 @@ public class QSTileHost implements QSTile.Host, Tunable {
             ZenModeController zen, HotspotController hotspot,
             CastController cast, FlashlightController flashlight,
             UserSwitcherController userSwitcher, UserInfoController userInfo,
-            KeyguardMonitor keyguard, SecurityController security,
+            SecurityController security,
             BatteryController battery, StatusBarIconController iconController,
             NextAlarmController nextAlarmController) {
         mContext = context;
@@ -138,7 +136,6 @@ public class QSTileHost implements QSTile.Host, Tunable {
         mFlashlight = flashlight;
         mUserSwitcherController = userSwitcher;
         mUserInfoController = userInfo;
-        mKeyguard = keyguard;
         mSecurity = security;
         mBattery = battery;
         mIconController = iconController;
@@ -188,21 +185,6 @@ public class QSTileHost implements QSTile.Host, Tunable {
     @Override
     public Collection<QSTile<?>> getTiles() {
         return mTiles.values();
-    }
-
-    @Override
-    public void startActivityDismissingKeyguard(final Intent intent) {
-        mStatusBar.postStartActivityDismissingKeyguard(intent, 0);
-    }
-
-    @Override
-    public void startActivityDismissingKeyguard(PendingIntent intent) {
-        mStatusBar.postStartActivityDismissingKeyguard(intent);
-    }
-
-    @Override
-    public void startRunnableDismissingKeyguard(Runnable runnable) {
-        mStatusBar.postQSRunnableDismissingKeyguard(runnable);
     }
 
     @Override
@@ -273,11 +255,6 @@ public class QSTileHost implements QSTile.Host, Tunable {
     @Override
     public FlashlightController getFlashlightController() {
         return mFlashlight;
-    }
-
-    @Override
-    public KeyguardMonitor getKeyguardMonitor() {
-        return mKeyguard;
     }
 
     @Override
