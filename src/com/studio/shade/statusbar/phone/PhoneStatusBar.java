@@ -116,8 +116,6 @@ import com.studio.shade.SystemUIFactory;
 import com.studio.shade.assist.AssistManager;
 import com.studio.shade.classifier.FalsingLog;
 import com.studio.shade.classifier.FalsingManager;
-import com.studio.shade.doze.DozeHost;
-import com.studio.shade.doze.DozeLog;
 import com.studio.shade.qs.QSContainer;
 import com.studio.shade.qs.QSPanel;
 import com.studio.shade.recents.ScreenPinningRequest;
