@@ -33,7 +33,6 @@ import com.studio.shade.qs.QSDetailItems.Item;
 import com.studio.shade.qs.QSTile;
 import com.studio.shade.statusbar.policy.CastController;
 import com.studio.shade.statusbar.policy.CastController.CastDevice;
-import com.studio.shade.statusbar.policy.KeyguardMonitor;
 
 import java.util.LinkedHashMap;
 import java.util.Set;
@@ -45,14 +44,12 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
 
     private final CastController mController;
     private final CastDetailAdapter mDetailAdapter;
-    private final KeyguardMonitor mKeyguard;
     private final Callback mCallback = new Callback();
 
     public CastTile(Host host) {
         super(host);
         mController = host.getCastController();
         mDetailAdapter = new CastDetailAdapter();
-        mKeyguard = host.getKeyguardMonitor();
     }
 
     @Override
@@ -71,11 +68,9 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
         if (DEBUG) Log.d(TAG, "setListening " + listening);
         if (listening) {
             mController.addCallback(mCallback);
-            mKeyguard.addCallback(mCallback);
         } else {
             mController.setDiscovering(false);
             mController.removeCallback(mCallback);
-            mKeyguard.removeCallback(mCallback);
         }
     }
 
@@ -93,17 +88,6 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
 
     @Override
     protected void handleClick() {
-        if (mKeyguard.isSecure() && !mKeyguard.canSkipBouncer()) {
-            mHost.startRunnableDismissingKeyguard(new Runnable() {
-                @Override
-                public void run() {
-                    MetricsLogger.action(mContext, getMetricsCategory());
-                    showDetail(true);
-                    mHost.openPanels();
-                }
-            });
-            return;
-        }
         MetricsLogger.action(mContext, getMetricsCategory());
         showDetail(true);
     }
@@ -162,14 +146,9 @@ public class CastTile extends QSTile<QSTile.BooleanState> {
                 : mContext.getString(R.string.quick_settings_cast_device_default_name);
     }
 
-    private final class Callback implements CastController.Callback, KeyguardMonitor.Callback {
+    private final class Callback implements CastController.Callback {
         @Override
         public void onCastDevicesChanged() {
-            refreshState();
-        }
-
-        @Override
-        public void onKeyguardChanged() {
             refreshState();
         }
     };
