@@ -19,7 +19,7 @@
 
 <com.studio.shade.statusbar.phone.NotificationPanelView 
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.studio.shade"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/notification_panel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"

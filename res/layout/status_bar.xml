@@ -20,7 +20,7 @@
 <!--    android:background="@drawable/status_bar_closed_default_background" -->
 <com.studio.shade.statusbar.phone.PhoneStatusBarView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.studio.shade"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/status_bar"
     android:background="@drawable/system_bar_background"
     android:orientation="vertical"
