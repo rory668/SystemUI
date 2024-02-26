@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.keyguard.ViewMediatorCallback;
 import com.studio.shade.statusbar.ScrimView;
-import com.studio.shade.statusbar.phone.KeyguardBouncer;
 import com.studio.shade.statusbar.phone.NotificationIconAreaController;
 import com.studio.shade.statusbar.phone.PhoneStatusBar;
 import com.studio.shade.statusbar.phone.QSTileHost;
@@ -75,12 +74,6 @@ public class SystemUIFactory {
     }
 
     public SystemUIFactory() {}
-
-    public KeyguardBouncer createKeyguardBouncer(Context context, ViewMediatorCallback callback,
-            LockPatternUtils lockPatternUtils, StatusBarWindowManager windowManager,
-            ViewGroup container) {
-        return new KeyguardBouncer(context, callback, lockPatternUtils, windowManager, container);
-    }
 
     public ScrimController createScrimController(ScrimView scrimBehind, ScrimView scrimInFront,
             View headsUpScrim) {
