@@ -39,7 +39,6 @@ import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.android.keyguard.KeyguardStatusView;
 import com.studio.shade.BatteryMeterView;
 import com.studio.shade.FontSizeUtils;
 import com.studio.shade.R;
@@ -427,9 +426,6 @@ public class StatusBarHeaderView extends BaseStatusBarHeader implements View.OnC
     @Override
     public void onNextAlarmChanged(AlarmManager.AlarmClockInfo nextAlarm) {
         mNextAlarm = nextAlarm;
-        if (nextAlarm != null) {
-            mAlarmStatus.setText(KeyguardStatusView.formatNextAlarm(getContext(), nextAlarm));
-        }
         mAlarmShowing = nextAlarm != null;
         updateEverything();
         requestCaptureValues();
@@ -538,7 +534,6 @@ public class StatusBarHeaderView extends BaseStatusBarHeader implements View.OnC
         } else if (v == mAlarmStatus && mNextAlarm != null) {
             PendingIntent showIntent = mNextAlarm.getShowIntent();
             if (showIntent != null) {
-                mActivityStarter.startPendingIntentDismissingKeyguard(showIntent);
             }
         }
     }
