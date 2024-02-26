@@ -27,7 +27,6 @@ import android.provider.Settings;
 import android.view.WindowManager;
 
 import com.studio.shade.SystemUI;
-import com.studio.shade.keyguard.KeyguardViewMediator;
 import com.studio.shade.qs.tiles.DndTile;
 import com.studio.shade.statusbar.phone.PhoneStatusBar;
 import com.studio.shade.statusbar.policy.ZenModeController;
@@ -162,8 +161,6 @@ public class VolumeDialogComponent implements VolumeComponent, TunerService.Tuna
     }
 
     private void startSettings(Intent intent) {
-        mSysui.getComponent(PhoneStatusBar.class).startActivityDismissingKeyguard(intent,
-                true /* onlyProvisioned */, true /* dismissShade */);
     }
 
     private final VolumeDialog.Callback mVolumeDialogCallback = new VolumeDialog.Callback() {
