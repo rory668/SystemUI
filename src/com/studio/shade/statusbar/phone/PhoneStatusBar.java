@@ -303,8 +303,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     protected PhoneStatusBarView mStatusBarView;
     private int mStatusBarWindowState = WINDOW_STATE_SHOWING;
     protected StatusBarWindowManager mStatusBarWindowManager;
-    private UnlockMethodCache mUnlockMethodCache;
-
+    
     int mPixelFormat;
     Object mQueueLock = new Object();
 
@@ -632,8 +631,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     Settings.Global.getUriFor(SETTING_HEADS_UP_TICKER), true,
                     mHeadsUpObserver);
         }
-        mUnlockMethodCache = UnlockMethodCache.getInstance(mContext);
-        mUnlockMethodCache.addListener(this);
 
         putComponent(PhoneStatusBar.class, this);
 
