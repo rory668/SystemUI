@@ -67,6 +67,7 @@ public class StatusBarWindowManager implements RemoteInputController.Callback {
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 barHeight,
                 WindowManager.LayoutParams.TYPE_STATUS_BAR,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
                         | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
                         | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH
