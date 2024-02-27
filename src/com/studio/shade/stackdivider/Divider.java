@@ -24,8 +24,6 @@ import android.view.View;
 
 import com.studio.shade.R;
 import com.studio.shade.SystemUI;
-import com.studio.shade.recents.Recents;
-import com.studio.shade.recents.misc.SystemServicesProxy;
 
 import static android.content.res.Configuration.ORIENTATION_LANDSCAPE;
 import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -52,8 +50,6 @@ public class Divider extends SystemUI {
         update(mContext.getResources().getConfiguration());
         putComponent(Divider.class, this);
         mDockDividerVisibilityListener = new DockDividerVisibilityListener();
-        SystemServicesProxy ssp = Recents.getSystemServices();
-        ssp.registerDockedStackListener(mDockDividerVisibilityListener);
         mForcedResizableController = new ForcedResizableInfoActivityController(mContext);
     }
 
