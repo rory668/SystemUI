@@ -9,7 +9,6 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 
 import com.studio.shade.R;
-import com.studio.shade.CustomStatusBarService;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -88,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isAccessibilityServiceEnabled() {
         int accessibilityEnabled = 0;
-        final String serviceId = getPackageName() + "/" + CustomStatusBarService.class.getCanonicalName();
+        final String serviceId = getPackageName() + "/";
         try {
             accessibilityEnabled = Settings.Secure.getInt(
                     getContentResolver(), Settings.Secure.ACCESSIBILITY_ENABLED);
