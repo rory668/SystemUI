@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.systemui.recents.misc;
+package com.studio.shade.recents.misc;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
