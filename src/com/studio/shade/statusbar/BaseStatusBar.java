@@ -100,7 +100,6 @@ import com.studio.shade.SystemUI;
 import com.studio.shade.assist.AssistManager;
 import com.studio.shade.statusbar.NotificationData.Entry;
 import com.studio.shade.statusbar.NotificationGuts.OnGutsClosedListener;
-import com.studio.shade.statusbar.phone.NavigationBarView;
 import com.studio.shade.statusbar.phone.NotificationGroupManager;
 import com.studio.shade.statusbar.policy.HeadsUpManager;
 import com.studio.shade.statusbar.policy.PreviewInflater;
@@ -177,9 +176,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected int mLayoutDirection = -1; // invalid
     protected AccessibilityManager mAccessibilityManager;
-
-    // on-screen navigation buttons
-    protected NavigationBarView mNavigationBarView = null;
 
     protected boolean mDeviceInteractive;
 
@@ -1836,8 +1832,7 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected abstract void setAreThereNotifications();
     protected abstract void updateNotifications();
-    public abstract boolean shouldDisableNavbarGestures();
-
+    
     public abstract void addNotification(StatusBarNotification notification,
             RankingMap ranking, Entry oldEntry);
     protected abstract void updateNotificationRanking(RankingMap ranking);
