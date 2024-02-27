@@ -27,8 +27,6 @@ import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.util.Log;
 
-import com.studio.shade.stackdivider.Divider;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,7 +44,6 @@ public class SystemUIApplication extends Application {
     private final Class<?>[] SERVICES = new Class[] {
             com.studio.shade.tuner.TunerService.class,
             com.studio.shade.volume.VolumeUI.class,
-            Divider.class,
             com.studio.shade.statusbar.SystemBars.class,
             com.studio.shade.media.RingtonePlayer.class
     };
