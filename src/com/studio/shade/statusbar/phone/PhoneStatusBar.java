@@ -330,8 +330,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private long mKeyguardFadingAwayDelay;
     private long mKeyguardFadingAwayDuration;
 
-    private int mNavigationBarWindowState = WINDOW_STATE_SHOWING;
-
     // the tracker view
     int mTrackingPosition; // the position of the top of the tracking view.
 
@@ -360,7 +358,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat")
         : null;
 
-    private int mNavigationIconHints = 0;
     private HandlerThread mHandlerThread;
 
     // ensure quick settings is disabled until the current user makes it through the setup wizard
@@ -414,7 +411,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private int mInteractingWindows;
     private boolean mAutohideSuspended;
     private int mStatusBarMode;
-    private int mNavigationBarMode;
     private int mMaxKeyguardNotifications;
 
     protected ScrimController mScrimController;
@@ -2189,9 +2185,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         }
 
         mExpandedVisible = true;
-        if (mNavigationBarView != null)
-            mNavigationBarView.setSlippery(true);
-
+        
         // Expand the window to encompass the full screen in anticipation of the drag.
         // This is only possible to do atomically because the status bar is at the top of the screen!
         mStatusBarWindowManager.setPanelVisible(true);
@@ -2764,13 +2758,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
             }
             else if (Intent.ACTION_SCREEN_OFF.equals(action)) {
-                notifyNavigationBarScreenOn(false);
                 notifyHeadsUpScreenOff();
                 finishBarAnimations();
                 resetUserExpandedStates();
             }
             else if (Intent.ACTION_SCREEN_ON.equals(action)) {
-                notifyNavigationBarScreenOn(true);
             }
         }
     };
@@ -2821,7 +2813,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             Log.v(TAG, "configuration changed: " + mContext.getResources().getConfiguration());
         }
 
-        repositionNavigationBar();
         updateRowStates();
         mIconController.defineSlots();
         mNetworkController.onConfigurationChanged();
@@ -2991,11 +2982,6 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             vibrate();
         }
     };
-
-    @Override
-    public boolean shouldDisableNavbarGestures() {
-        return !isDeviceProvisioned() || (mDisabled1 & StatusBarManager.DISABLE_SEARCH) != 0;
-    }
 
     private static class FastColorDrawable extends Drawable {
         private final int mColor;
