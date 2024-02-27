@@ -10,9 +10,7 @@
   public void setGlowScale(float);
 }
 
--keep class com.studio.shade.statusbar.car.CarStatusBar
 -keep class com.studio.shade.statusbar.phone.PhoneStatusBar
--keep class com.studio.shade.statusbar.tv.TvStatusBar
 -keep class com.studio.shade.SystemUIFactory
 
 -keepclassmembers class ** {
@@ -21,13 +19,6 @@
 }
 -keepclassmembers class ** extends **.EventBus$InterprocessEvent {
     public <init>(android.os.Bundle);
-}
-
--keep class com.studio.shade.recents.views.TaskView {
-    public int getDim();
-    public void setDim(int);
-    public float getTaskProgress();
-    public void setTaskProgress(float);
 }
 
 -keepclasseswithmembers class * {
