@@ -33,7 +33,6 @@ import com.studio.shade.R;
 import com.studio.shade.ViewInvertHelper;
 import com.studio.shade.statusbar.CrossFadeHelper;
 import com.studio.shade.statusbar.ExpandableNotificationRow;
-import com.studio.shade.statusbar.NotificationHeaderUtil;
 import com.studio.shade.statusbar.notification.HybridGroupManager;
 import com.studio.shade.statusbar.notification.HybridNotificationView;
 import com.studio.shade.statusbar.notification.NotificationUtils;
@@ -74,7 +73,6 @@ public class NotificationChildrenContainer extends ViewGroup {
 
     private NotificationHeaderView mNotificationHeader;
     private NotificationViewWrapper mNotificationHeaderWrapper;
-    private NotificationHeaderUtil mHeaderUtil;
     private ViewState mHeaderViewState;
 
     public NotificationChildrenContainer(Context context) {
@@ -226,7 +224,6 @@ public class NotificationChildrenContainer extends ViewGroup {
         row.setUserLocked(false);
         updateGroupOverflow();
         if (!row.isRemoved()) {
-            mHeaderUtil.restoreNotificationHeader(row);
         }
     }
 
@@ -259,7 +256,6 @@ public class NotificationChildrenContainer extends ViewGroup {
     }
 
     public void updateChildrenHeaderAppearance() {
-        mHeaderUtil.updateChildrenHeaderAppearance();
     }
 
     public void updateGroupOverflow() {
@@ -679,7 +675,6 @@ public class NotificationChildrenContainer extends ViewGroup {
 
     public void setNotificationParent(ExpandableNotificationRow parent) {
         mNotificationParent = parent;
-        mHeaderUtil = new NotificationHeaderUtil(mNotificationParent);
     }
 
     public ExpandableNotificationRow getNotificationParent() {
